@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
     DATABASE_URL: str = "sqlite:///./data/cybershield.db"
 
+    # JWT Authentication Settings
+    JWT_SECRET_KEY: str = "cybershield-dev-secret-key-change-in-production-min-32-chars"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
     model_config = SettingsConfigDict(
         env_file=(".env", "../.env"),
         env_file_encoding="utf-8",

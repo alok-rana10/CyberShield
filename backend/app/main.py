@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import get_settings
+from app.routes.auth import router as auth_router
 
 settings = get_settings()
 
@@ -25,6 +26,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include Routers
+app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
+
 
 @app.get(
     f"{settings.API_V1_PREFIX}/health",
@@ -44,7 +48,6 @@ async def health_check() -> dict:
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Handle unexpected server errors without leaking internal stack traces."""
-    # When DEBUG is False or in production, return generic message
     detail = str(exc) if settings.DEBUG else "An unexpected internal error occurred."
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
