@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
 from app.schemas.auth import (
+    UserRole,
     UserRegisterRequest,
     UserLoginRequest,
     UserResponse,
@@ -55,6 +56,22 @@ def register(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="A user with this email address already exists.",
+        )
+
+    # Prevent self-registration with elevated 'admin' role
+    if user_in.role == UserRole.ADMIN:
+        record_audit_log(
+            db=db,
+            action="USER_REGISTER_UNAUTHORIZED_ROLE",
+            resource_type="USER",
+            status_code=status.HTTP_403_FORBIDDEN,
+            ip_address=ip,
+            user_agent=ua,
+            details={"attempted_role": "admin", "email": user_in.email},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Self-registration with 'admin' role is prohibited.",
         )
 
     # Hash password securely using Argon2id

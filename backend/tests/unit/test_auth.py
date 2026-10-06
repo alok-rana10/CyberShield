@@ -9,6 +9,7 @@ from app.config import get_settings
 from app.database import SessionLocal
 from app.models.user import User
 from app.models.audit import AuditLog
+from app.security.hashing import hash_password
 
 client = TestClient(app)
 settings = get_settings()
@@ -67,6 +68,21 @@ def test_duplicate_registration_rejected():
     second_res = client.post(f"{settings.API_V1_PREFIX}/auth/register", json=payload)
     assert second_res.status_code == 409
     assert "already exists" in second_res.json()["detail"]
+
+
+def test_registration_cannot_create_admin_account():
+    """Verify that user-controlled input cannot self-register an elevated admin account."""
+    email = random_email()
+    response = client.post(
+        f"{settings.API_V1_PREFIX}/auth/register",
+        json={
+            "email": email,
+            "password": VALID_PASSWORD,
+            "role": "admin",
+        },
+    )
+    assert response.status_code == 403
+    assert "prohibited" in response.json()["detail"]
 
 
 def test_weak_password_registration_rejected():
@@ -173,10 +189,31 @@ def test_unauthorized_requests_rejected():
 
 def test_role_based_access_control():
     """Verify RBAC access permissions across admin, analyst, and viewer roles."""
-    roles = ["admin", "analyst", "viewer"]
     tokens = {}
 
-    for r in roles:
+    # Provision admin account directly in database (simulating system bootstrap/admin provisioning)
+    admin_email = f"admin_{uuid.uuid4().hex[:6]}@example.com"
+    db: Session = SessionLocal()
+    try:
+        admin_user = User(
+            email=admin_email,
+            hashed_password=hash_password(VALID_PASSWORD),
+            role="admin",
+            is_active=True,
+        )
+        db.add(admin_user)
+        db.commit()
+    finally:
+        db.close()
+
+    admin_login = client.post(
+        f"{settings.API_V1_PREFIX}/auth/login",
+        json={"email": admin_email, "password": VALID_PASSWORD},
+    )
+    tokens["admin"] = admin_login.json()["access_token"]
+
+    # Register analyst and viewer via standard self-registration
+    for r in ["analyst", "viewer"]:
         email = f"{r}_{uuid.uuid4().hex[:6]}@example.com"
         client.post(
             f"{settings.API_V1_PREFIX}/auth/register",
