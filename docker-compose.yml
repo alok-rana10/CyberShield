@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cybershield-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=CyberShield
+      - APP_ENV=development
+      - DEBUG=True
+      - CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+      - DATABASE_URL=sqlite:///./data/cybershield.db
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cybershield-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+    depends_on:
+      - backend
