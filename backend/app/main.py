@@ -9,6 +9,7 @@ from app.routes.auth import router as auth_router
 from app.routes.findings import router as findings_router
 from app.routes.dashboard import router as dashboard_router
 from app.routes.headers import router as headers_router
+from app.routes.fim import router as fim_router
 
 settings = get_settings()
 
@@ -34,6 +35,7 @@ app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
 app.include_router(findings_router, prefix=settings.API_V1_PREFIX)
 app.include_router(dashboard_router, prefix=settings.API_V1_PREFIX)
 app.include_router(headers_router, prefix=settings.API_V1_PREFIX)
+app.include_router(fim_router, prefix=settings.API_V1_PREFIX)
 
 
 @app.get(

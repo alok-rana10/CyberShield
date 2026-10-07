@@ -26,6 +26,16 @@ from app.schemas.web_security import (
     HeaderEvaluationDetail,
     HeaderAnalysisResponse,
 )
+from app.schemas.fim import (
+    FIMStatus,
+    FIMBaselineRequest,
+    FIMCheckRequest,
+    FIMRecordResponse,
+    FIMBaselineResponse,
+    FIMCheckResponse,
+    FIMStatusSummaryResponse,
+    FIMRecordListResponse,
+)
 
 __all__ = [
     "UserRole",
@@ -46,4 +56,12 @@ __all__ = [
     "HeaderAnalysisRequest",
     "HeaderEvaluationDetail",
     "HeaderAnalysisResponse",
+    "FIMStatus",
+    "FIMBaselineRequest",
+    "FIMCheckRequest",
+    "FIMRecordResponse",
+    "FIMBaselineResponse",
+    "FIMCheckResponse",
+    "FIMStatusSummaryResponse",
+    "FIMRecordListResponse",
 ]

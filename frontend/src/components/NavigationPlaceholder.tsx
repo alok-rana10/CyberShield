@@ -71,11 +71,13 @@ const PLANNED_MODULES: ModuleItem[] = [
 interface NavigationPlaceholderProps {
   onNavigateToHeaders?: () => void;
   onNavigateToFindings?: () => void;
+  onNavigateToFim?: () => void;
 }
 
 export const NavigationPlaceholder: React.FC<NavigationPlaceholderProps> = ({
   onNavigateToHeaders,
   onNavigateToFindings,
+  onNavigateToFim,
 }) => {
   return (
     <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 shadow-xl backdrop-blur">
@@ -95,13 +97,14 @@ export const NavigationPlaceholder: React.FC<NavigationPlaceholderProps> = ({
         {PLANNED_MODULES.map((mod) => {
           const isHeaders = mod.name === 'Web Security Header Analyzer';
           const isFindings = mod.name === 'Security Findings Aggregator';
+          const isFim = mod.name === 'File Integrity Monitor';
           const isAuth = mod.name === 'Audit Trail & Compliance';
 
           return (
             <div
               key={mod.name}
               className={`p-4 rounded-lg border transition flex flex-col justify-between ${
-                isHeaders || isFindings
+                isHeaders || isFindings || isFim
                   ? 'bg-slate-900/80 border-cyan-800/60 shadow-sm shadow-cyan-950'
                   : 'bg-slate-950/50 border-slate-800/80 hover:border-slate-700'
               }`}
@@ -110,7 +113,7 @@ export const NavigationPlaceholder: React.FC<NavigationPlaceholderProps> = ({
                 <div className="flex items-center justify-between mb-2">
                   <div
                     className={`p-2 rounded-lg border ${
-                      isHeaders || isFindings
+                      isHeaders || isFindings || isFim
                         ? 'bg-cyan-950 text-cyan-400 border-cyan-700/80'
                         : 'bg-slate-900 text-cyan-400 border-slate-800'
                     }`}
@@ -119,14 +122,14 @@ export const NavigationPlaceholder: React.FC<NavigationPlaceholderProps> = ({
                   </div>
                   <span
                     className={`text-[11px] font-mono font-medium px-2 py-0.5 rounded ${
-                      isHeaders || isFindings
+                      isHeaders || isFindings || isFim
                         ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/80'
                         : isAuth
                           ? 'bg-cyan-950/80 text-cyan-300 border border-cyan-800/80'
                           : 'bg-slate-800 text-slate-300'
                     }`}
                   >
-                    {isHeaders || isFindings ? 'Operational' : isAuth ? 'Integrated' : mod.phase}
+                    {isHeaders || isFindings || isFim ? 'Operational' : isAuth ? 'Integrated' : mod.phase}
                   </span>
                 </div>
                 <h3 className="text-sm font-semibold text-slate-200 mt-2">{mod.name}</h3>
@@ -147,6 +150,13 @@ export const NavigationPlaceholder: React.FC<NavigationPlaceholderProps> = ({
                     className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline flex items-center space-x-1"
                   >
                     <span>Open Registry →</span>
+                  </button>
+                ) : isFim ? (
+                  <button
+                    onClick={onNavigateToFim}
+                    className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline flex items-center space-x-1"
+                  >
+                    <span>Launch Monitor →</span>
                   </button>
                 ) : isAuth ? (
                   <span className="text-slate-400">Security Layer Active</span>

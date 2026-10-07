@@ -14,6 +14,12 @@ import {
   HeaderAnalysisRequest,
   HeaderAnalysisResponse,
   WebSecurityHistoryItem,
+  FIMBaselineRequest,
+  FIMBaselineResponse,
+  FIMCheckRequest,
+  FIMCheckResponse,
+  FIMRecordListResponse,
+  FIMStatusSummary,
 } from '../types';
 
 const rawApiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
@@ -342,6 +348,134 @@ export async function analyzeHeadersApi(
  */
 export async function getHeaderHistoryApi(token: string): Promise<WebSecurityHistoryItem[]> {
   const response = await fetch(`${API_BASE_URL}/api/v1/headers/history`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Create or update cryptographic baseline via POST /api/v1/fim/baselines
+ */
+export async function createFimBaselineApi(
+  token: string,
+  payload: FIMBaselineRequest,
+): Promise<FIMBaselineResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/fim/baselines`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Execute integrity check against baseline via POST /api/v1/fim/check
+ */
+export async function checkFimIntegrityApi(
+  token: string,
+  payload: FIMCheckRequest,
+): Promise<FIMCheckResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/fim/check`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Retrieve FIM status summary via GET /api/v1/fim/status
+ */
+export async function getFimStatusApi(token: string): Promise<FIMStatusSummary> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/fim/status`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Retrieve paginated monitored file records via GET /api/v1/fim/records
+ */
+export async function getFimRecordsApi(
+  token: string,
+  params: { status?: string; path?: string; page?: number; size?: number } = {},
+): Promise<FIMRecordListResponse> {
+  const query = new URLSearchParams();
+  if (params.status && params.status !== 'all') {
+    query.set('status', params.status);
+  }
+  if (params.path && params.path.trim()) {
+    query.set('path', params.path.trim());
+  }
+  if (params.page) {
+    query.set('page', params.page.toString());
+  }
+  if (params.size) {
+    query.set('size', params.size.toString());
+  }
+
+  const queryString = query.toString() ? `?${query.toString()}` : '';
+  const response = await fetch(`${API_BASE_URL}/api/v1/fim/records${queryString}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Retrieve authorized monitoring roots via GET /api/v1/fim/roots
+ */
+export async function getFimRootsApi(token: string): Promise<{ allowed_roots: string[] }> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/fim/roots`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,

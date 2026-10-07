@@ -45,9 +45,13 @@ class FileIntegrityRecord(Base):
     )
     status: Mapped[str] = mapped_column(
         String(30),
-        default="VERIFIED",
+        default="baseline",
         nullable=False,
         index=True,
+    )
+    file_modified_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
     )
     last_verified_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
@@ -58,8 +62,21 @@ class FileIntegrityRecord(Base):
         default=utc_now,
         nullable=False,
     )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=utc_now,
+        onupdate=utc_now,
+        nullable=False,
+    )
 
     # Relationships
     user = relationship("User", back_populates="file_integrity_records")
 
     __table_args__ = (Index("ix_fim_user_path", "user_id", "monitored_path"),)
+
+    @property
+    def file_name(self) -> str:
+        """Derive simple file name from monitored path."""
+        import os
+
+        return os.path.basename(self.monitored_path)

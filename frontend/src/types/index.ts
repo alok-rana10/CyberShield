@@ -179,3 +179,64 @@ export interface WebSecurityHistoryItem {
   created_findings_count: number;
   analyzed_at: string;
 }
+
+export type FIMRecordStatus = 'baseline' | 'unchanged' | 'modified' | 'added' | 'deleted';
+
+export interface FIMBaselineRequest {
+  path: string;
+}
+
+export interface FIMCheckRequest {
+  path: string;
+}
+
+export interface FIMRecord {
+  id: string;
+  user_id: string;
+  monitored_path: string;
+  file_name: string;
+  baseline_hash: string;
+  current_hash?: string | null;
+  file_size_bytes: number;
+  status: FIMRecordStatus;
+  file_modified_at?: string | null;
+  last_verified_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FIMBaselineResponse {
+  path: string;
+  files_baselined_count: number;
+  total_size_bytes: number;
+  created_at: string;
+  records: FIMRecord[];
+}
+
+export interface FIMCheckResponse {
+  path: string;
+  checked_at: string;
+  total_files: number;
+  unchanged_count: number;
+  modified_count: number;
+  added_count: number;
+  deleted_count: number;
+  created_findings_count: number;
+  created_finding_ids: string[];
+  records: FIMRecord[];
+}
+
+export interface FIMStatusSummary {
+  total_monitored_files: number;
+  status_counts: Record<string, number>;
+  allowed_roots: string[];
+  last_check_at?: string | null;
+}
+
+export interface FIMRecordListResponse {
+  items: FIMRecord[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+}

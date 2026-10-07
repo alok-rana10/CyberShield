@@ -8,6 +8,7 @@ import { RegisterPage } from '../features/auth/RegisterPage';
 import { ProtectedRoute } from '../features/auth/ProtectedRoute';
 import { FindingsPage } from '../features/findings/FindingsPage';
 import { WebSecurityHeadersPage } from '../features/headers/WebSecurityHeadersPage';
+import { FileIntegrityMonitorPage } from '../features/fim/FileIntegrityMonitorPage';
 import { AuthProvider } from '../features/auth/AuthContext';
 import { useAuth } from '../features/auth/useAuth';
 import { getHealthStatus, API_BASE_URL } from '../services/api';
@@ -17,7 +18,7 @@ import { UserCheck, KeyRound } from 'lucide-react';
 const AppContent: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const [activeView, setActiveView] = useState<
-    'dashboard' | 'findings' | 'headers' | 'login' | 'register'
+    'dashboard' | 'findings' | 'headers' | 'fim' | 'login' | 'register'
   >('dashboard');
   const [selectedFindingId, setSelectedFindingId] = useState<string | undefined>(undefined);
   const [health, setHealth] = useState<HealthCheckState>({
@@ -148,6 +149,7 @@ const AppContent: React.FC = () => {
               <NavigationPlaceholder
                 onNavigateToHeaders={() => setActiveView('headers')}
                 onNavigateToFindings={() => setActiveView('findings')}
+                onNavigateToFim={() => setActiveView('fim')}
               />
             </section>
           </ProtectedRoute>
@@ -162,6 +164,12 @@ const AppContent: React.FC = () => {
         {activeView === 'headers' && (
           <ProtectedRoute onNavigateToLogin={() => setActiveView('login')}>
             <WebSecurityHeadersPage onNavigateToFindings={() => setActiveView('findings')} />
+          </ProtectedRoute>
+        )}
+
+        {activeView === 'fim' && (
+          <ProtectedRoute onNavigateToLogin={() => setActiveView('login')}>
+            <FileIntegrityMonitorPage onNavigateToFindings={() => setActiveView('findings')} />
           </ProtectedRoute>
         )}
       </main>
