@@ -1,12 +1,14 @@
 """Comprehensive unit tests for mandatory SSRF protection and URL validation."""
 
-import pytest
-from unittest.mock import patch
 import socket
+from unittest.mock import patch
+import httpcore
+import pytest
 
 from app.security.ssrf import (
     InvalidTargetURLError,
     SSRFProtectionError,
+    SSRFSafeNetworkBackend,
     resolve_and_validate_hostname,
     validate_target_url,
 )
@@ -176,3 +178,82 @@ def test_reject_dns_resolution_failure():
         with pytest.raises(SSRFProtectionError) as exc_info:
             resolve_and_validate_hostname("nonexistent-domain-12345.xyz", 80)
         assert "dns resolution failed" in str(exc_info.value).lower()
+
+
+def test_allow_nat64_translated_public_ipv4():
+    """Verify that synthesized NAT64 addresses (RFC 6052 64:ff9b::/96) embedding
+    valid public IPv4 addresses pass SSRF validation without being flagged as reserved."""
+    # 64:ff9b::401d:1183 embeds public IPv4 64.29.17.131
+    fake_addrinfo = [
+        (
+            socket.AF_INET6,
+            socket.SOCK_STREAM,
+            socket.IPPROTO_TCP,
+            "",
+            ("64:ff9b::401d:1183", 443, 0, 0),
+        )
+    ]
+    with patch("socket.getaddrinfo", return_value=fake_addrinfo):
+        parsed = validate_target_url("https://port-roan-seven.vercel.app")
+        assert parsed.hostname == "port-roan-seven.vercel.app"
+
+
+def test_reject_nat64_translated_embedding_private_or_loopback_ipv4():
+    """Verify that NAT64 addresses (64:ff9b::/96) embedding private, loopback,
+    or cloud metadata destinations are strictly rejected."""
+    prohibited_nat64 = [
+        "64:ff9b::7f00:1",  # Embeds 127.0.0.1 (loopback)
+        "64:ff9b::127.0.0.1",  # Embeds 127.0.0.1 (loopback)
+        "64:ff9b::a00:1",  # Embeds 10.0.0.1 (private)
+        "64:ff9b::a9fe:a9fe",  # Embeds 169.254.169.254 (metadata)
+        "64:ff9b::6440:1",  # Embeds 100.64.0.1 (carrier-grade NAT)
+        "64:ff9b::6464:64c8",  # Embeds 100.100.100.200 (Alibaba metadata)
+        "64:ff9b::0",  # Embeds 0.0.0.0 (unspecified)
+    ]
+    for prohibited_ip in prohibited_nat64:
+        fake_addrinfo = [
+            (
+                socket.AF_INET6,
+                socket.SOCK_STREAM,
+                socket.IPPROTO_TCP,
+                "",
+                (prohibited_ip, 80, 0, 0),
+            )
+        ]
+        with patch("socket.getaddrinfo", return_value=fake_addrinfo):
+            with pytest.raises(SSRFProtectionError) as exc_info:
+                resolve_and_validate_hostname("attacker-nat64.example.com", 80)
+            assert (
+                "prohibited" in str(exc_info.value).lower()
+                or "loopback" in str(exc_info.value).lower()
+                or "metadata" in str(exc_info.value).lower()
+                or "private" in str(exc_info.value).lower()
+            )
+
+
+def test_ssrf_safe_backend_pins_verified_ip():
+    """Verify that SSRFSafeNetworkBackend connects strictly to verified IP addresses
+    and cannot bypass the validated destination."""
+    backend = SSRFSafeNetworkBackend()
+
+    fake_addrinfo = [
+        (
+            socket.AF_INET,
+            socket.SOCK_STREAM,
+            socket.IPPROTO_TCP,
+            "",
+            ("93.184.216.34", 443),
+        )
+    ]
+
+    with patch("socket.getaddrinfo", return_value=fake_addrinfo):
+        with patch.object(
+            httpcore.SyncBackend, "connect_tcp", return_value="mock_stream"
+        ) as mock_super_connect:
+            stream = backend.connect_tcp("example.com", 443)
+            assert stream == "mock_stream"
+            # Verify super().connect_tcp was called with host='93.184.216.34' (NOT 'example.com')
+            mock_super_connect.assert_called_once()
+            called_kwargs = mock_super_connect.call_args[1]
+            assert called_kwargs["host"] == "93.184.216.34"
+            assert called_kwargs["port"] == 443

@@ -69,42 +69,53 @@ EXPLICIT_BLOCKED_IPS: Set[str] = {
     "100.100.100.200",  # Alibaba cloud metadata
 }
 
+# NAT64 / DNS64 Well-Known Prefix (RFC 6052)
+NAT64_WELL_KNOWN_PREFIX = ipaddress.ip_network("64:ff9b::/96")
+
 
 def is_ip_disallowed(ip: ipaddress.IPv4Address | ipaddress.IPv6Address) -> Tuple[bool, str]:
     """Check if an IP address belongs to any private, loopback, or reserved range.
 
-    Handles IPv4, IPv6, and IPv4-mapped IPv6 addresses.
+    Handles IPv4, IPv6, IPv4-mapped (RFC 4291), and NAT64/DNS64 translated (RFC 6052) addresses.
+    Unpacks embedded IPv4 addresses to enforce identical defensive checks on the real destination.
     """
-    # Unpack IPv4-mapped IPv6 (e.g. ::ffff:127.0.0.1)
+    orig_ip_str = str(ip)
+
+    # 1. Unpack IPv4-mapped IPv6 (e.g. ::ffff:127.0.0.1, RFC 4291)
     if isinstance(ip, ipaddress.IPv6Address) and ip.ipv4_mapped:
         ip = ip.ipv4_mapped
+
+    # 2. Unpack NAT64 / DNS64 Well-Known Prefix (64:ff9b::/96, RFC 6052)
+    elif isinstance(ip, ipaddress.IPv6Address) and ip in NAT64_WELL_KNOWN_PREFIX:
+        # Extract embedded 32-bit IPv4 address from the final 4 octets
+        ip = ipaddress.IPv4Address(ip.packed[-4:])
 
     ip_str = str(ip)
 
     if ip_str in EXPLICIT_BLOCKED_IPS:
-        return True, f"Explicit cloud metadata address {ip_str} is prohibited."
+        return True, f"Explicit cloud metadata address {orig_ip_str} is prohibited."
 
     if ip.is_loopback:
-        return True, f"Loopback address {ip_str} is prohibited."
+        return True, f"Loopback address {orig_ip_str} is prohibited."
 
     if ip.is_private:
-        return True, f"Private address range {ip_str} is prohibited."
+        return True, f"Private address range {orig_ip_str} is prohibited."
 
     if ip.is_link_local:
-        return True, f"Link-local address {ip_str} is prohibited."
+        return True, f"Link-local address {orig_ip_str} is prohibited."
 
     if ip.is_multicast:
-        return True, f"Multicast address {ip_str} is prohibited."
+        return True, f"Multicast address {orig_ip_str} is prohibited."
 
     if ip.is_unspecified:
-        return True, f"Unspecified address {ip_str} is prohibited."
+        return True, f"Unspecified address {orig_ip_str} is prohibited."
 
     if ip.is_reserved:
-        return True, f"Reserved address range {ip_str} is prohibited."
+        return True, f"Reserved address range {orig_ip_str} is prohibited."
 
     for net in ADDITIONAL_BLOCKED_NETWORKS:
         if ip in net:
-            return True, f"Address {ip_str} in restricted network {net} is prohibited."
+            return True, f"Address {orig_ip_str} in restricted network {net} is prohibited."
 
     return False, ""
 
@@ -236,13 +247,23 @@ class SSRFSafeNetworkBackend(httpcore.SyncBackend):
 
         # Resolve host and validate every candidate IP
         validated_ips = resolve_and_validate_hostname(host, port)
-        target_ip = validated_ips[0]
 
-        # Connect directly to target_ip (so no secondary DNS lookup occurs)
-        return super().connect_tcp(
-            host=target_ip,
-            port=port,
-            timeout=timeout,
-            local_address=local_address,
-            socket_options=socket_options,
-        )
+        last_exc: Exception | None = None
+        for target_ip in validated_ips:
+            try:
+                # Connect directly to target_ip (so no secondary DNS lookup occurs)
+                return super().connect_tcp(
+                    host=target_ip,
+                    port=port,
+                    timeout=timeout,
+                    local_address=local_address,
+                    socket_options=socket_options,
+                )
+            except Exception as exc:
+                last_exc = exc
+                continue
+
+        if last_exc:
+            raise last_exc
+
+        raise SSRFProtectionError(f"No reachable verified IP address for '{host}'.")
