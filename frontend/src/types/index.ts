@@ -137,3 +137,45 @@ export interface DashboardSummary {
   posture_score: number;
 }
 
+export interface HeaderAnalysisRequest {
+  url: string;
+  authorization_confirmed: boolean;
+}
+
+export interface HeaderEvaluationDetail {
+  name: string;
+  status: 'present' | 'missing' | 'weak';
+  value: string | null;
+  severity: string;
+  description: string;
+  recommendation: string;
+}
+
+export interface HeaderAnalysisResponse {
+  id: string;
+  target_url: string;
+  final_url: string;
+  status_code: number;
+  analyzed_at: string;
+  score: number;
+  grade: string;
+  headers_evaluated_count: number;
+  headers_present_count: number;
+  headers_missing_count: number;
+  created_findings_count: number;
+  details: HeaderEvaluationDetail[];
+  created_finding_ids: string[];
+}
+
+export interface WebSecurityHistoryItem {
+  id: string;
+  target_url: string;
+  status_code: number;
+  grade: string;
+  score: number;
+  headers_evaluated_count: number;
+  headers_present_count: number;
+  headers_missing_count: number;
+  created_findings_count: number;
+  analyzed_at: string;
+}

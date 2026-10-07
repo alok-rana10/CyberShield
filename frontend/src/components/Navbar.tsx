@@ -1,19 +1,25 @@
 import React from 'react';
-import { Shield, Lock, LogOut, User as UserIcon, LogIn, UserPlus, Activity, Layers } from 'lucide-react';
+import {
+  Shield,
+  Lock,
+  LogOut,
+  User as UserIcon,
+  LogIn,
+  UserPlus,
+  Activity,
+  Layers,
+  Globe,
+} from 'lucide-react';
 import { ConnectionState } from '../types';
 import { useAuth } from '../features/auth/useAuth';
 
 interface NavbarProps {
   connectionState: ConnectionState;
-  activeView: 'dashboard' | 'findings' | 'login' | 'register';
-  onNavigate: (view: 'dashboard' | 'findings' | 'login' | 'register') => void;
+  activeView: 'dashboard' | 'findings' | 'headers' | 'login' | 'register';
+  onNavigate: (view: 'dashboard' | 'findings' | 'headers' | 'login' | 'register') => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({
-  connectionState,
-  activeView,
-  onNavigate,
-}) => {
+export const Navbar: React.FC<NavbarProps> = ({ connectionState, activeView, onNavigate }) => {
   const { user, isAuthenticated, logout } = useAuth();
 
   const getRoleBadgeColor = (role?: string) => {
@@ -44,10 +50,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="flex items-center space-x-2">
                 <span className="text-xl font-bold tracking-tight text-white">CyberShield</span>
                 <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  Phase 4 Engine
+                  Phase 5 Engine
                 </span>
               </div>
-              <p className="text-xs text-slate-400 hidden sm:block">Defensive Security Monitoring Platform</p>
+              <p className="text-xs text-slate-400 hidden sm:block">
+                Defensive Security Monitoring Platform
+              </p>
             </div>
           </button>
 
@@ -77,6 +85,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Layers className="w-3.5 h-3.5" />
                 <span>Findings Registry</span>
               </button>
+
+              <button
+                onClick={() => onNavigate('headers')}
+                className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                  activeView === 'headers'
+                    ? 'bg-slate-800 text-cyan-400 border border-slate-700'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                }`}
+              >
+                <Globe className="w-3.5 h-3.5" />
+                <span>Security Headers</span>
+              </button>
             </nav>
           )}
         </div>
@@ -90,16 +110,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 connectionState === 'online'
                   ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]'
                   : connectionState === 'offline'
-                  ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]'
-                  : 'bg-amber-400 animate-pulse'
+                    ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]'
+                    : 'bg-amber-400 animate-pulse'
               }`}
             />
             <span className="text-slate-300 hidden sm:inline">
               {connectionState === 'online'
                 ? 'Backend Online'
                 : connectionState === 'offline'
-                ? 'Backend Offline'
-                : 'Connecting...'}
+                  ? 'Backend Offline'
+                  : 'Connecting...'}
             </span>
           </div>
 

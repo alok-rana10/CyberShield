@@ -13,12 +13,7 @@ import {
   ShieldCheck,
   AlertCircle,
 } from 'lucide-react';
-import {
-  SecurityFinding,
-  FindingSeverity,
-  FindingStatus,
-  FindingCreatePayload,
-} from '../../types';
+import { SecurityFinding, FindingSeverity, FindingStatus, FindingCreatePayload } from '../../types';
 import {
   getFindingsApi,
   createFindingApi,
@@ -99,7 +94,16 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
     } finally {
       setIsLoading(false);
     }
-  }, [token, page, pageSize, search, severityFilter, statusFilter, initialFindingId, selectedFinding]);
+  }, [
+    token,
+    page,
+    pageSize,
+    search,
+    severityFilter,
+    statusFilter,
+    initialFindingId,
+    selectedFinding,
+  ]);
 
   useEffect(() => {
     fetchFindings();
@@ -127,7 +131,11 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
 
   const handleDelete = async (findingId: string) => {
     if (!token || !isAdmin) return;
-    if (!window.confirm('Are you sure you want to permanently delete this finding? This action is audited.')) {
+    if (
+      !window.confirm(
+        'Are you sure you want to permanently delete this finding? This action is audited.',
+      )
+    ) {
       return;
     }
     try {
@@ -212,7 +220,8 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
               Security Findings Registry
             </h1>
             <p className="text-xs text-slate-400 mt-1">
-              Standardized vulnerabilities, misconfigurations, and integrity alerts classified by CWE and severity
+              Standardized vulnerabilities, misconfigurations, and integrity alerts classified by
+              CWE and severity
             </p>
           </div>
 
@@ -232,7 +241,9 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
               disabled={isLoading}
               className="inline-flex items-center space-x-1.5 px-3 py-2 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition disabled:opacity-50"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-cyan-400' : ''}`} />
+              <RefreshCw
+                className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-cyan-400' : ''}`}
+              />
               <span>{isLoading ? 'Loading...' : 'Refresh'}</span>
             </button>
           </div>
@@ -319,7 +330,9 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
             <AlertCircle className="w-4 h-4 text-rose-400" />
             <span>{error}</span>
           </div>
-          <button onClick={fetchFindings} className="underline hover:text-white">Retry</button>
+          <button onClick={fetchFindings} className="underline hover:text-white">
+            Retry
+          </button>
         </div>
       )}
 
@@ -328,7 +341,9 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
         {isLoading ? (
           <div className="py-16 text-center space-y-3">
             <Loader2 className="w-8 h-8 text-cyan-400 animate-spin mx-auto" />
-            <p className="text-xs font-mono text-slate-400">Loading security findings from database...</p>
+            <p className="text-xs font-mono text-slate-400">
+              Loading security findings from database...
+            </p>
           </div>
         ) : findings.length === 0 ? (
           <div className="py-16 text-center space-y-3">
@@ -372,27 +387,39 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
                     className="hover:bg-slate-800/50 cursor-pointer transition"
                   >
                     <td className="py-3 px-4">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold border ${getSeverityBadgeClass(item.severity)}`}>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold border ${getSeverityBadgeClass(item.severity)}`}
+                      >
                         {item.severity}
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase border ${getStatusBadgeClass(item.status)}`}>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase border ${getStatusBadgeClass(item.status)}`}
+                      >
                         {item.status}
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="font-semibold text-slate-200 max-w-md truncate" title={item.title}>
+                      <div
+                        className="font-semibold text-slate-200 max-w-md truncate"
+                        title={item.title}
+                      >
                         {item.title}
                       </div>
                       {item.cwe_id && (
-                        <span className="text-[10px] font-mono text-cyan-400/80">{item.cwe_id}</span>
+                        <span className="text-[10px] font-mono text-cyan-400/80">
+                          {item.cwe_id}
+                        </span>
                       )}
                     </td>
                     <td className="py-3 px-4 font-mono text-slate-400 text-[11px]">
                       {item.category}
                     </td>
-                    <td className="py-3 px-4 font-mono text-slate-300 text-[11px] max-w-xs truncate" title={item.affected_resource || ''}>
+                    <td
+                      className="py-3 px-4 font-mono text-slate-300 text-[11px] max-w-xs truncate"
+                      title={item.affected_resource || ''}
+                    >
                       {item.affected_resource || '—'}
                     </td>
                     <td className="py-3 px-4 font-mono text-slate-400 text-[11px]">
@@ -450,10 +477,14 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
             <div className="p-5 border-b border-slate-800 flex items-start justify-between sticky top-0 bg-slate-900/95 backdrop-blur z-10">
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold border ${getSeverityBadgeClass(selectedFinding.severity)}`}>
+                  <span
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold border ${getSeverityBadgeClass(selectedFinding.severity)}`}
+                  >
                     {selectedFinding.severity}
                   </span>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase border ${getStatusBadgeClass(selectedFinding.status)}`}>
+                  <span
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase border ${getStatusBadgeClass(selectedFinding.status)}`}
+                  >
                     {selectedFinding.status}
                   </span>
                   {selectedFinding.cwe_id && (
@@ -487,21 +518,31 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
               {/* Core Metadata Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800">
-                  <span className="text-[10px] font-mono text-slate-400 block mb-0.5">Category</span>
+                  <span className="text-[10px] font-mono text-slate-400 block mb-0.5">
+                    Category
+                  </span>
                   <span className="font-semibold text-slate-200">{selectedFinding.category}</span>
                 </div>
                 <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800">
-                  <span className="text-[10px] font-mono text-slate-400 block mb-0.5">Source Module</span>
-                  <span className="font-semibold text-slate-200">{selectedFinding.source_module}</span>
+                  <span className="text-[10px] font-mono text-slate-400 block mb-0.5">
+                    Source Module
+                  </span>
+                  <span className="font-semibold text-slate-200">
+                    {selectedFinding.source_module}
+                  </span>
                 </div>
                 <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800">
-                  <span className="text-[10px] font-mono text-slate-400 block mb-0.5">Created Date</span>
+                  <span className="text-[10px] font-mono text-slate-400 block mb-0.5">
+                    Created Date
+                  </span>
                   <span className="font-mono text-slate-200">
                     {new Date(selectedFinding.created_at).toLocaleDateString()}
                   </span>
                 </div>
                 <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800">
-                  <span className="text-[10px] font-mono text-slate-400 block mb-0.5">Resolved Date</span>
+                  <span className="text-[10px] font-mono text-slate-400 block mb-0.5">
+                    Resolved Date
+                  </span>
                   <span className="font-mono text-slate-200">
                     {selectedFinding.resolved_at
                       ? new Date(selectedFinding.resolved_at).toLocaleDateString()
@@ -513,7 +554,9 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
               {/* Affected Asset */}
               {selectedFinding.affected_resource && (
                 <div>
-                  <h4 className="font-mono text-slate-400 mb-1.5">Affected Asset / Target Resource</h4>
+                  <h4 className="font-mono text-slate-400 mb-1.5">
+                    Affected Asset / Target Resource
+                  </h4>
                   <div className="p-2.5 rounded-lg bg-slate-950/80 border border-slate-800 font-mono text-cyan-300 text-xs">
                     {selectedFinding.affected_resource}
                   </div>
@@ -667,7 +710,9 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
                   <label className="block text-slate-300 font-medium mb-1">Severity *</label>
                   <select
                     value={createForm.severity}
-                    onChange={(e) => setCreateForm({ ...createForm, severity: e.target.value as FindingSeverity })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, severity: e.target.value as FindingSeverity })
+                    }
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-cyan-500 font-mono"
                   >
                     <option value="critical">Critical</option>
@@ -703,7 +748,9 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
                     type="text"
                     placeholder="e.g., https://app.example.com or 10.0.0.1:443"
                     value={createForm.affected_resource}
-                    onChange={(e) => setCreateForm({ ...createForm, affected_resource: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, affected_resource: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:border-cyan-500 font-mono"
                   />
                 </div>
@@ -721,7 +768,9 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Technical Description *</label>
+                <label className="block text-slate-300 font-medium mb-1">
+                  Technical Description *
+                </label>
                 <textarea
                   required
                   rows={3}
@@ -733,7 +782,9 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Remediation Guidance *</label>
+                <label className="block text-slate-300 font-medium mb-1">
+                  Remediation Guidance *
+                </label>
                 <textarea
                   required
                   rows={2}
@@ -745,7 +796,9 @@ export const FindingsPage: React.FC<FindingsPageProps> = ({ initialFindingId }) 
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Evidence / Log Snippet (Optional)</label>
+                <label className="block text-slate-300 font-medium mb-1">
+                  Evidence / Log Snippet (Optional)
+                </label>
                 <textarea
                   rows={2}
                   placeholder="Paste headers or diagnostic socket responses here..."

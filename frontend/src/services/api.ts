@@ -11,6 +11,9 @@ import {
   SecurityFinding,
   TokenResponse,
   User,
+  HeaderAnalysisRequest,
+  HeaderAnalysisResponse,
+  WebSecurityHistoryItem,
 } from '../types';
 
 const rawApiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
@@ -26,7 +29,9 @@ async function parseErrorDetail(response: Response): Promise<string> {
       return errorData.detail;
     }
     if (Array.isArray(errorData.detail)) {
-      return errorData.detail.map((err: { msg?: string }) => err.msg || 'Validation error').join('; ');
+      return errorData.detail
+        .map((err: { msg?: string }) => err.msg || 'Validation error')
+        .join('; ');
     }
     return response.statusText || 'Request failed';
   } catch {
@@ -305,4 +310,49 @@ export async function deleteFindingApi(token: string, id: string): Promise<void>
     const detail = await parseErrorDetail(response);
     throw new Error(detail);
   }
+}
+
+/**
+ * Execute defensive web security header analysis via POST /api/v1/headers/analyze
+ */
+export async function analyzeHeadersApi(
+  token: string,
+  payload: HeaderAnalysisRequest,
+): Promise<HeaderAnalysisResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/headers/analyze`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Retrieve recent web security header assessments via GET /api/v1/headers/history
+ */
+export async function getHeaderHistoryApi(token: string): Promise<WebSecurityHistoryItem[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/headers/history`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
 }

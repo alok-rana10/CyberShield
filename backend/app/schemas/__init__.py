@@ -21,6 +21,11 @@ from app.schemas.dashboard import (
     StatusCounts,
     DashboardSummaryResponse,
 )
+from app.schemas.web_security import (
+    HeaderAnalysisRequest,
+    HeaderEvaluationDetail,
+    HeaderAnalysisResponse,
+)
 
 __all__ = [
     "UserRole",
@@ -38,4 +43,7 @@ __all__ = [
     "SeverityCounts",
     "StatusCounts",
     "DashboardSummaryResponse",
+    "HeaderAnalysisRequest",
+    "HeaderEvaluationDetail",
+    "HeaderAnalysisResponse",
 ]

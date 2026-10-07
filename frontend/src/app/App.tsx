@@ -7,6 +7,7 @@ import { LoginPage } from '../features/auth/LoginPage';
 import { RegisterPage } from '../features/auth/RegisterPage';
 import { ProtectedRoute } from '../features/auth/ProtectedRoute';
 import { FindingsPage } from '../features/findings/FindingsPage';
+import { WebSecurityHeadersPage } from '../features/headers/WebSecurityHeadersPage';
 import { AuthProvider } from '../features/auth/AuthContext';
 import { useAuth } from '../features/auth/useAuth';
 import { getHealthStatus, API_BASE_URL } from '../services/api';
@@ -15,7 +16,9 @@ import { UserCheck, KeyRound } from 'lucide-react';
 
 const AppContent: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
-  const [activeView, setActiveView] = useState<'dashboard' | 'findings' | 'login' | 'register'>('dashboard');
+  const [activeView, setActiveView] = useState<
+    'dashboard' | 'findings' | 'headers' | 'login' | 'register'
+  >('dashboard');
   const [selectedFindingId, setSelectedFindingId] = useState<string | undefined>(undefined);
   const [health, setHealth] = useState<HealthCheckState>({
     state: 'checking',
@@ -90,9 +93,9 @@ const AppContent: React.FC = () => {
                 CyberShield Command Center
               </h1>
               <p className="text-sm sm:text-base text-slate-400 max-w-3xl leading-relaxed">
-                A modular defensive cybersecurity monitoring and assessment platform built for authorized environments.
-                Provides structured vulnerability diagnostics, file integrity baselines, log anomaly detection, and
-                compliance reporting.
+                A modular defensive cybersecurity monitoring and assessment platform built for
+                authorized environments. Provides structured vulnerability diagnostics, file
+                integrity baselines, log anomaly detection, and compliance reporting.
               </p>
             </section>
 
@@ -127,11 +130,7 @@ const AppContent: React.FC = () => {
 
             {/* Live Backend Connection Card */}
             <section>
-              <StatusCard
-                status={health}
-                onRefresh={checkHealth}
-                isRefreshing={isRefreshing}
-              />
+              <StatusCard status={health} onRefresh={checkHealth} isRefreshing={isRefreshing} />
             </section>
 
             {/* Real Security Posture Metrics & Recent Findings */}
@@ -146,7 +145,10 @@ const AppContent: React.FC = () => {
 
             {/* Planned Modules Roadmap */}
             <section>
-              <NavigationPlaceholder />
+              <NavigationPlaceholder
+                onNavigateToHeaders={() => setActiveView('headers')}
+                onNavigateToFindings={() => setActiveView('findings')}
+              />
             </section>
           </ProtectedRoute>
         )}
@@ -156,13 +158,21 @@ const AppContent: React.FC = () => {
             <FindingsPage initialFindingId={selectedFindingId} />
           </ProtectedRoute>
         )}
+
+        {activeView === 'headers' && (
+          <ProtectedRoute onNavigateToLogin={() => setActiveView('login')}>
+            <WebSecurityHeadersPage onNavigateToFindings={() => setActiveView('findings')} />
+          </ProtectedRoute>
+        )}
       </main>
 
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950/80 py-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>CyberShield © 2026 — Defensive Security & Assessment Platform</span>
-          <span className="font-mono text-slate-600">Built with FastAPI, React, TypeScript, and Tailwind CSS</span>
+          <span className="font-mono text-slate-600">
+            Built with FastAPI, React, TypeScript, and Tailwind CSS
+          </span>
         </div>
       </footer>
     </div>

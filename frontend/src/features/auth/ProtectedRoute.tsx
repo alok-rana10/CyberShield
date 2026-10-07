@@ -7,10 +7,7 @@ interface ProtectedRouteProps {
   onNavigateToLogin: () => void;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  children,
-  onNavigateToLogin,
-}) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, onNavigateToLogin }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
@@ -30,7 +27,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         </div>
         <h2 className="text-xl font-bold text-white mb-2">Access Restricted</h2>
         <p className="text-sm text-slate-400 mb-6 leading-relaxed">
-          The requested security dashboard and assessment modules require valid operator credentials. Please sign in to authenticate.
+          The requested security dashboard and assessment modules require valid operator
+          credentials. Please sign in to authenticate.
         </p>
         <button
           onClick={onNavigateToLogin}

@@ -20,9 +20,7 @@ interface DashboardOverviewProps {
   onNavigateToFindings: (selectedFindingId?: string) => void;
 }
 
-export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
-  onNavigateToFindings,
-}) => {
+export const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onNavigateToFindings }) => {
   const { token } = useAuth();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -76,10 +74,29 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   };
 
   const getScoreRating = (score: number) => {
-    if (score >= 90) return { label: 'Optimal Posture', color: 'text-emerald-400', bg: 'bg-emerald-950/40 border-emerald-800/50' };
-    if (score >= 70) return { label: 'Satisfactory Hardening', color: 'text-cyan-400', bg: 'bg-cyan-950/40 border-cyan-800/50' };
-    if (score >= 50) return { label: 'Moderate Exposure', color: 'text-amber-400', bg: 'bg-amber-950/40 border-amber-800/50' };
-    return { label: 'High Remediation Priority', color: 'text-rose-400', bg: 'bg-rose-950/40 border-rose-800/50' };
+    if (score >= 90)
+      return {
+        label: 'Optimal Posture',
+        color: 'text-emerald-400',
+        bg: 'bg-emerald-950/40 border-emerald-800/50',
+      };
+    if (score >= 70)
+      return {
+        label: 'Satisfactory Hardening',
+        color: 'text-cyan-400',
+        bg: 'bg-cyan-950/40 border-cyan-800/50',
+      };
+    if (score >= 50)
+      return {
+        label: 'Moderate Exposure',
+        color: 'text-amber-400',
+        bg: 'bg-amber-950/40 border-amber-800/50',
+      };
+    return {
+      label: 'High Remediation Priority',
+      color: 'text-rose-400',
+      bg: 'bg-rose-950/40 border-rose-800/50',
+    };
   };
 
   return (
@@ -93,18 +110,25 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <span>Security Posture & Telemetry</span>
             </h2>
             <p className="text-xs text-slate-400 mt-1">
-              Aggregated defensive metrics calculated from verified authorized diagnostic assessments
+              Aggregated defensive metrics calculated from verified authorized diagnostic
+              assessments
             </p>
           </div>
 
           <div className="flex items-center space-x-3">
             {summary && (
-              <div className={`px-3 py-1.5 rounded-lg border flex items-center space-x-2 text-xs font-mono ${getScoreRating(summary.posture_score).bg}`}>
+              <div
+                className={`px-3 py-1.5 rounded-lg border flex items-center space-x-2 text-xs font-mono ${getScoreRating(summary.posture_score).bg}`}
+              >
                 <span className="text-slate-400">Posture Score:</span>
-                <span className={`text-sm font-bold ${getScoreRating(summary.posture_score).color}`}>
+                <span
+                  className={`text-sm font-bold ${getScoreRating(summary.posture_score).color}`}
+                >
                   {summary.posture_score}/100
                 </span>
-                <span className="text-[10px] text-slate-400">({getScoreRating(summary.posture_score).label})</span>
+                <span className="text-[10px] text-slate-400">
+                  ({getScoreRating(summary.posture_score).label})
+                </span>
               </div>
             )}
 
@@ -113,7 +137,9 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               disabled={isLoading}
               className="inline-flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition disabled:opacity-50"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-cyan-400' : ''}`} />
+              <RefreshCw
+                className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-cyan-400' : ''}`}
+              />
               <span>{isLoading ? 'Syncing...' : 'Refresh'}</span>
             </button>
           </div>
@@ -122,7 +148,9 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
         {error && (
           <div className="mt-4 p-3 rounded-lg bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs flex items-center justify-between">
             <span>{error}</span>
-            <button onClick={fetchSummary} className="underline text-xs hover:text-white">Retry</button>
+            <button onClick={fetchSummary} className="underline text-xs hover:text-white">
+              Retry
+            </button>
           </div>
         )}
 
@@ -132,7 +160,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           <div className="p-3.5 rounded-lg bg-slate-950/70 border border-slate-800/80 flex flex-col justify-between">
             <span className="text-[11px] font-mono text-slate-400">Total Findings</span>
             <span className="text-2xl font-bold font-mono text-white mt-1">
-              {isLoading ? '—' : summary?.total_findings ?? 0}
+              {isLoading ? '—' : (summary?.total_findings ?? 0)}
             </span>
             <span className="text-[10px] text-slate-500 mt-1">Recorded in registry</span>
           </div>
@@ -144,7 +172,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
             </span>
             <span className="text-2xl font-bold font-mono text-rose-300 mt-1">
-              {isLoading ? '—' : summary?.severity_counts.critical ?? 0}
+              {isLoading ? '—' : (summary?.severity_counts.critical ?? 0)}
             </span>
             <span className="text-[10px] text-rose-400/70 mt-1">Immediate action</span>
           </div>
@@ -156,7 +184,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <AlertTriangle className="w-3.5 h-3.5 text-orange-400" />
             </span>
             <span className="text-2xl font-bold font-mono text-orange-300 mt-1">
-              {isLoading ? '—' : summary?.severity_counts.high ?? 0}
+              {isLoading ? '—' : (summary?.severity_counts.high ?? 0)}
             </span>
             <span className="text-[10px] text-orange-400/70 mt-1">Elevated risk</span>
           </div>
@@ -168,7 +196,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <Clock className="w-3.5 h-3.5 text-amber-400" />
             </span>
             <span className="text-2xl font-bold font-mono text-amber-300 mt-1">
-              {isLoading ? '—' : summary?.severity_counts.medium ?? 0}
+              {isLoading ? '—' : (summary?.severity_counts.medium ?? 0)}
             </span>
             <span className="text-[10px] text-amber-400/70 mt-1">Hardening gap</span>
           </div>
@@ -180,7 +208,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <span className="w-2 h-2 rounded-full bg-amber-400"></span>
             </span>
             <span className="text-2xl font-bold font-mono text-amber-300 mt-1">
-              {isLoading ? '—' : summary?.status_counts.open ?? 0}
+              {isLoading ? '—' : (summary?.status_counts.open ?? 0)}
             </span>
             <span className="text-[10px] text-slate-500 mt-1">Awaiting fix</span>
           </div>
@@ -192,7 +220,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
             </span>
             <span className="text-2xl font-bold font-mono text-emerald-300 mt-1">
-              {isLoading ? '—' : summary?.status_counts.resolved ?? 0}
+              {isLoading ? '—' : (summary?.status_counts.resolved ?? 0)}
             </span>
             <span className="text-[10px] text-emerald-400/70 mt-1">Verified mitigated</span>
           </div>
@@ -208,46 +236,71 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             <div className="h-2.5 w-full bg-slate-950 rounded-full overflow-hidden flex border border-slate-800">
               {summary.severity_counts.critical > 0 && (
                 <div
-                  style={{ width: `${(summary.severity_counts.critical / summary.total_findings) * 100}%` }}
+                  style={{
+                    width: `${(summary.severity_counts.critical / summary.total_findings) * 100}%`,
+                  }}
                   className="bg-rose-500"
                   title={`Critical: ${summary.severity_counts.critical}`}
                 />
               )}
               {summary.severity_counts.high > 0 && (
                 <div
-                  style={{ width: `${(summary.severity_counts.high / summary.total_findings) * 100}%` }}
+                  style={{
+                    width: `${(summary.severity_counts.high / summary.total_findings) * 100}%`,
+                  }}
                   className="bg-orange-500"
                   title={`High: ${summary.severity_counts.high}`}
                 />
               )}
               {summary.severity_counts.medium > 0 && (
                 <div
-                  style={{ width: `${(summary.severity_counts.medium / summary.total_findings) * 100}%` }}
+                  style={{
+                    width: `${(summary.severity_counts.medium / summary.total_findings) * 100}%`,
+                  }}
                   className="bg-amber-400"
                   title={`Medium: ${summary.severity_counts.medium}`}
                 />
               )}
               {summary.severity_counts.low > 0 && (
                 <div
-                  style={{ width: `${(summary.severity_counts.low / summary.total_findings) * 100}%` }}
+                  style={{
+                    width: `${(summary.severity_counts.low / summary.total_findings) * 100}%`,
+                  }}
                   className="bg-cyan-400"
                   title={`Low: ${summary.severity_counts.low}`}
                 />
               )}
               {summary.severity_counts.informational > 0 && (
                 <div
-                  style={{ width: `${(summary.severity_counts.informational / summary.total_findings) * 100}%` }}
+                  style={{
+                    width: `${(summary.severity_counts.informational / summary.total_findings) * 100}%`,
+                  }}
                   className="bg-slate-500"
                   title={`Informational: ${summary.severity_counts.informational}`}
                 />
               )}
             </div>
             <div className="flex flex-wrap gap-4 text-[11px] font-mono text-slate-400 pt-1">
-              <span className="flex items-center space-x-1.5"><span className="w-2 h-2 rounded-full bg-rose-500"></span><span>Critical ({summary.severity_counts.critical})</span></span>
-              <span className="flex items-center space-x-1.5"><span className="w-2 h-2 rounded-full bg-orange-500"></span><span>High ({summary.severity_counts.high})</span></span>
-              <span className="flex items-center space-x-1.5"><span className="w-2 h-2 rounded-full bg-amber-400"></span><span>Medium ({summary.severity_counts.medium})</span></span>
-              <span className="flex items-center space-x-1.5"><span className="w-2 h-2 rounded-full bg-cyan-400"></span><span>Low ({summary.severity_counts.low})</span></span>
-              <span className="flex items-center space-x-1.5"><span className="w-2 h-2 rounded-full bg-slate-500"></span><span>Info ({summary.severity_counts.informational})</span></span>
+              <span className="flex items-center space-x-1.5">
+                <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span>Critical ({summary.severity_counts.critical})</span>
+              </span>
+              <span className="flex items-center space-x-1.5">
+                <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                <span>High ({summary.severity_counts.high})</span>
+              </span>
+              <span className="flex items-center space-x-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span>Medium ({summary.severity_counts.medium})</span>
+              </span>
+              <span className="flex items-center space-x-1.5">
+                <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
+                <span>Low ({summary.severity_counts.low})</span>
+              </span>
+              <span className="flex items-center space-x-1.5">
+                <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                <span>Info ({summary.severity_counts.informational})</span>
+              </span>
             </div>
           </div>
         )}
@@ -261,7 +314,9 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <Layers className="w-4 h-4 text-cyan-400" />
               <span>Recent Security Findings</span>
             </h3>
-            <p className="text-xs text-slate-400">Most recently identified vulnerabilities and gaps</p>
+            <p className="text-xs text-slate-400">
+              Most recently identified vulnerabilities and gaps
+            </p>
           </div>
           <button
             onClick={() => onNavigateToFindings()}
@@ -279,9 +334,12 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
         ) : !summary || summary.recent_findings.length === 0 ? (
           <div className="py-8 text-center space-y-2">
             <ShieldCheck className="w-8 h-8 text-emerald-400 mx-auto" />
-            <p className="text-sm font-semibold text-slate-200">No Security Findings Recorded Yet</p>
+            <p className="text-sm font-semibold text-slate-200">
+              No Security Findings Recorded Yet
+            </p>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              Your security registry is currently clean. Automated scans and diagnostic modules will populate this dashboard.
+              Your security registry is currently clean. Automated scans and diagnostic modules will
+              populate this dashboard.
             </p>
             <button
               onClick={() => onNavigateToFindings()}
@@ -307,12 +365,16 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                 {summary.recent_findings.map((finding: SecurityFinding) => (
                   <tr key={finding.id} className="hover:bg-slate-800/40 transition">
                     <td className="py-2.5 px-3">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold border ${getSeverityBadgeClass(finding.severity)}`}>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold border ${getSeverityBadgeClass(finding.severity)}`}
+                      >
                         {finding.severity}
                       </span>
                     </td>
                     <td className="py-2.5 px-3">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase border ${getStatusBadgeClass(finding.status)}`}>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase border ${getStatusBadgeClass(finding.status)}`}
+                      >
                         {finding.status}
                       </span>
                     </td>
@@ -321,7 +383,9 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                         {finding.title}
                       </div>
                       {finding.cwe_id && (
-                        <span className="text-[10px] font-mono text-slate-500">{finding.cwe_id}</span>
+                        <span className="text-[10px] font-mono text-slate-500">
+                          {finding.cwe_id}
+                        </span>
                       )}
                     </td>
                     <td className="py-2.5 px-3 font-mono text-slate-400 text-[11px] truncate max-w-xs">
@@ -351,9 +415,10 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
       <div className="p-4 rounded-lg bg-cyan-950/20 border border-cyan-800/40 flex items-start space-x-3 text-xs text-slate-300">
         <ShieldAlert className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
         <p className="leading-relaxed">
-          <strong className="text-cyan-300">Defensive Security Notice:</strong> CyberShield is designed strictly for
-          monitoring, testing, and securing systems, networks, files, and domains you own or have explicit, documented
-          authorization to assess. All diagnostic findings are logged in an immutable audit trail.
+          <strong className="text-cyan-300">Defensive Security Notice:</strong> CyberShield is
+          designed strictly for monitoring, testing, and securing systems, networks, files, and
+          domains you own or have explicit, documented authorization to assess. All diagnostic
+          findings are logged in an immutable audit trail.
         </p>
       </div>
 
@@ -366,7 +431,8 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             </div>
             <h4 className="text-xs font-semibold text-white">Explicit Authorization Scope</h4>
             <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-              Every operation strictly requires operator confirmation. Scanners prohibit probing boundaries outside target scope.
+              Every operation strictly requires operator confirmation. Scanners prohibit probing
+              boundaries outside target scope.
             </p>
           </div>
           <div className="mt-3 pt-2 border-t border-slate-900 text-[10px] font-mono text-cyan-400">
@@ -381,7 +447,8 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             </div>
             <h4 className="text-xs font-semibold text-white">Non-Destructive Mechanics</h4>
             <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-              Diagnostic probes use safe timeouts and passive header inspection. No exploits or intrusive testing tools are permitted.
+              Diagnostic probes use safe timeouts and passive header inspection. No exploits or
+              intrusive testing tools are permitted.
             </p>
           </div>
           <div className="mt-3 pt-2 border-t border-slate-900 text-[10px] font-mono text-indigo-400">
@@ -396,7 +463,8 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             </div>
             <h4 className="text-xs font-semibold text-white">Immutable Non-Repudiation</h4>
             <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-              All findings creation, status changes, and administrative deletions generate structured compliance audit trails.
+              All findings creation, status changes, and administrative deletions generate
+              structured compliance audit trails.
             </p>
           </div>
           <div className="mt-3 pt-2 border-t border-slate-900 text-[10px] font-mono text-amber-400">

@@ -68,7 +68,15 @@ const PLANNED_MODULES: ModuleItem[] = [
   },
 ];
 
-export const NavigationPlaceholder: React.FC = () => {
+interface NavigationPlaceholderProps {
+  onNavigateToHeaders?: () => void;
+  onNavigateToFindings?: () => void;
+}
+
+export const NavigationPlaceholder: React.FC<NavigationPlaceholderProps> = ({
+  onNavigateToHeaders,
+  onNavigateToFindings,
+}) => {
   return (
     <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 shadow-xl backdrop-blur">
       <div className="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-5">
@@ -84,28 +92,71 @@ export const NavigationPlaceholder: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {PLANNED_MODULES.map((mod) => (
-          <div
-            key={mod.name}
-            className="p-4 rounded-lg bg-slate-950/50 border border-slate-800/80 hover:border-slate-700 transition flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <div className="p-2 rounded-lg bg-slate-900 text-cyan-400 border border-slate-800">
-                  {mod.icon}
+        {PLANNED_MODULES.map((mod) => {
+          const isHeaders = mod.name === 'Web Security Header Analyzer';
+          const isFindings = mod.name === 'Security Findings Aggregator';
+          const isAuth = mod.name === 'Audit Trail & Compliance';
+
+          return (
+            <div
+              key={mod.name}
+              className={`p-4 rounded-lg border transition flex flex-col justify-between ${
+                isHeaders || isFindings
+                  ? 'bg-slate-900/80 border-cyan-800/60 shadow-sm shadow-cyan-950'
+                  : 'bg-slate-950/50 border-slate-800/80 hover:border-slate-700'
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <div
+                    className={`p-2 rounded-lg border ${
+                      isHeaders || isFindings
+                        ? 'bg-cyan-950 text-cyan-400 border-cyan-700/80'
+                        : 'bg-slate-900 text-cyan-400 border-slate-800'
+                    }`}
+                  >
+                    {mod.icon}
+                  </div>
+                  <span
+                    className={`text-[11px] font-mono font-medium px-2 py-0.5 rounded ${
+                      isHeaders || isFindings
+                        ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/80'
+                        : isAuth
+                          ? 'bg-cyan-950/80 text-cyan-300 border border-cyan-800/80'
+                          : 'bg-slate-800 text-slate-300'
+                    }`}
+                  >
+                    {isHeaders || isFindings ? 'Operational' : isAuth ? 'Integrated' : mod.phase}
+                  </span>
                 </div>
-                <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                  {mod.phase}
-                </span>
+                <h3 className="text-sm font-semibold text-slate-200 mt-2">{mod.name}</h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">{mod.description}</p>
               </div>
-              <h3 className="text-sm font-semibold text-slate-200 mt-2">{mod.name}</h3>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed">{mod.description}</p>
+
+              <div className="mt-4 pt-3 border-t border-slate-800/60 text-[11px] font-mono flex items-center justify-between">
+                {isHeaders ? (
+                  <button
+                    onClick={onNavigateToHeaders}
+                    className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline flex items-center space-x-1"
+                  >
+                    <span>Launch Analyzer →</span>
+                  </button>
+                ) : isFindings ? (
+                  <button
+                    onClick={onNavigateToFindings}
+                    className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline flex items-center space-x-1"
+                  >
+                    <span>Open Registry →</span>
+                  </button>
+                ) : isAuth ? (
+                  <span className="text-slate-400">Security Layer Active</span>
+                ) : (
+                  <span className="text-slate-500">Scheduled: {mod.phase}</span>
+                )}
+              </div>
             </div>
-            <div className="mt-4 pt-3 border-t border-slate-900 text-[11px] text-slate-500 font-mono">
-              Status: Planned
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

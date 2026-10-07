@@ -21,7 +21,9 @@ export const StatusCard: React.FC<StatusCardProps> = ({ status, onRefresh, isRef
           </div>
           <div>
             <h2 className="text-base font-semibold text-white">Core System Connectivity</h2>
-            <p className="text-xs text-slate-400">Direct ASGI service probe via REST /api/v1/health</p>
+            <p className="text-xs text-slate-400">
+              Direct ASGI service probe via REST /api/v1/health
+            </p>
           </div>
         </div>
 
@@ -31,7 +33,9 @@ export const StatusCard: React.FC<StatusCardProps> = ({ status, onRefresh, isRef
           className="inline-flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition disabled:opacity-50"
           title="Re-run health check probe"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-cyan-400' : ''}`} />
+          <RefreshCw
+            className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-cyan-400' : ''}`}
+          />
           <span>{isRefreshing ? 'Checking...' : 'Refresh'}</span>
         </button>
       </div>
@@ -43,7 +47,9 @@ export const StatusCard: React.FC<StatusCardProps> = ({ status, onRefresh, isRef
           <div className="flex items-center space-x-2">
             {isOnline && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
             {isOffline && <XCircle className="w-5 h-5 text-rose-400" />}
-            {status.state === 'checking' && <AlertCircle className="w-5 h-5 text-amber-400 animate-pulse" />}
+            {status.state === 'checking' && (
+              <AlertCircle className="w-5 h-5 text-amber-400 animate-pulse" />
+            )}
             <span
               className={`text-sm font-semibold ${
                 isOnline ? 'text-emerald-400' : isOffline ? 'text-rose-400' : 'text-amber-400'
@@ -89,7 +95,8 @@ export const StatusCard: React.FC<StatusCardProps> = ({ status, onRefresh, isRef
         <div className="mt-4 p-3 rounded-lg bg-rose-950/30 border border-rose-800/50 text-rose-300 text-xs flex items-start space-x-2">
           <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
           <div>
-            <span className="font-semibold">Connection failed:</span> {status.errorMessage}. Verify that the FastAPI backend is running with Uvicorn.
+            <span className="font-semibold">Connection failed:</span> {status.errorMessage}. Verify
+            that the FastAPI backend is running with Uvicorn.
           </div>
         </div>
       )}

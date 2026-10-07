@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { useAuth } from './useAuth';
-import { UserPlus, Mail, Lock, User as UserIcon, Shield, AlertCircle, CheckCircle2, Loader2, ArrowRight } from 'lucide-react';
+import {
+  UserPlus,
+  Mail,
+  Lock,
+  User as UserIcon,
+  Shield,
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+  ArrowRight,
+} from 'lucide-react';
 
 interface RegisterPageProps {
   onSuccess: () => void;
@@ -87,7 +97,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onNavigat
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-300 mb-1.5">Full Name (Optional)</label>
+          <label className="block text-xs font-medium text-slate-300 mb-1.5">
+            Full Name (Optional)
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
               <UserIcon className="w-4 h-4" />
@@ -103,7 +115,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSuccess, onNavigat
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-300 mb-1.5">Operational Role</label>
+          <label className="block text-xs font-medium text-slate-300 mb-1.5">
+            Operational Role
+          </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
               <Shield className="w-4 h-4" />

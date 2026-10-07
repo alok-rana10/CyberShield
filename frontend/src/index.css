@@ -5,14 +5,14 @@
 @layer base {
   body {
     @apply bg-slate-950 text-slate-100 antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
 }
 
 /* Subtle cybersecurity grid background */
 .cyber-grid {
   background-size: 32px 32px;
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(14, 165, 233, 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
 }
