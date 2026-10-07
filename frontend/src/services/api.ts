@@ -1,7 +1,14 @@
 import {
+  DashboardSummary,
+  FindingCreatePayload,
+  FindingFilterParams,
+  FindingListResponse,
+  FindingStatusUpdatePayload,
+  FindingUpdatePayload,
   HealthResponse,
   LoginCredentials,
   RegisterCredentials,
+  SecurityFinding,
   TokenResponse,
   User,
 } from '../types';
@@ -127,4 +134,175 @@ export async function getMeApi(token: string): Promise<User> {
   }
 
   return response.json();
+}
+
+/**
+ * Fetch aggregated dashboard metrics via GET /api/v1/dashboard/summary
+ */
+export async function getDashboardSummaryApi(token: string): Promise<DashboardSummary> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/dashboard/summary`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * List paginated findings with filter parameters via GET /api/v1/findings
+ */
+export async function getFindingsApi(
+  token: string,
+  params: FindingFilterParams = {},
+): Promise<FindingListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params.page) searchParams.set('page', params.page.toString());
+  if (params.size) searchParams.set('size', params.size.toString());
+  if (params.severity) searchParams.set('severity', params.severity);
+  if (params.status) searchParams.set('status', params.status);
+  if (params.category) searchParams.set('category', params.category);
+  if (params.source_module) searchParams.set('source_module', params.source_module);
+  if (params.search) searchParams.set('search', params.search);
+
+  const url = `${API_BASE_URL}/api/v1/findings${
+    searchParams.toString() ? `?${searchParams.toString()}` : ''
+  }`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetch a single finding by ID via GET /api/v1/findings/{id}
+ */
+export async function getFindingByIdApi(token: string, id: string): Promise<SecurityFinding> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/findings/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Create a new security finding via POST /api/v1/findings
+ */
+export async function createFindingApi(
+  token: string,
+  payload: FindingCreatePayload,
+): Promise<SecurityFinding> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/findings`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Transition finding status via PATCH /api/v1/findings/{id}/status
+ */
+export async function updateFindingStatusApi(
+  token: string,
+  id: string,
+  payload: FindingStatusUpdatePayload,
+): Promise<SecurityFinding> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/findings/${id}/status`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Update editable finding fields via PATCH /api/v1/findings/{id}
+ */
+export async function updateFindingApi(
+  token: string,
+  id: string,
+  payload: FindingUpdatePayload,
+): Promise<SecurityFinding> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/findings/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Delete a finding permanently via DELETE /api/v1/findings/{id}
+ */
+export async function deleteFindingApi(token: string, id: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/findings/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
 }

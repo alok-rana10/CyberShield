@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from '../components/Navbar';
 import { StatusCard } from '../components/StatusCard';
-import { DashboardPlaceholder } from '../components/DashboardPlaceholder';
+import { DashboardOverview } from '../features/dashboard/DashboardOverview';
 import { NavigationPlaceholder } from '../components/NavigationPlaceholder';
 import { LoginPage } from '../features/auth/LoginPage';
 import { RegisterPage } from '../features/auth/RegisterPage';
 import { ProtectedRoute } from '../features/auth/ProtectedRoute';
+import { FindingsPage } from '../features/findings/FindingsPage';
 import { AuthProvider } from '../features/auth/AuthContext';
 import { useAuth } from '../features/auth/useAuth';
 import { getHealthStatus, API_BASE_URL } from '../services/api';
@@ -14,7 +15,8 @@ import { UserCheck, KeyRound } from 'lucide-react';
 
 const AppContent: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
-  const [activeView, setActiveView] = useState<'dashboard' | 'login' | 'register'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'findings' | 'login' | 'register'>('dashboard');
+  const [selectedFindingId, setSelectedFindingId] = useState<string | undefined>(undefined);
   const [health, setHealth] = useState<HealthCheckState>({
     state: 'checking',
     apiUrl: API_BASE_URL,
@@ -132,15 +134,26 @@ const AppContent: React.FC = () => {
               />
             </section>
 
-            {/* Core Principles & Dashboard Placeholder */}
+            {/* Real Security Posture Metrics & Recent Findings */}
             <section>
-              <DashboardPlaceholder />
+              <DashboardOverview
+                onNavigateToFindings={(findingId) => {
+                  setSelectedFindingId(findingId);
+                  setActiveView('findings');
+                }}
+              />
             </section>
 
             {/* Planned Modules Roadmap */}
             <section>
               <NavigationPlaceholder />
             </section>
+          </ProtectedRoute>
+        )}
+
+        {activeView === 'findings' && (
+          <ProtectedRoute onNavigateToLogin={() => setActiveView('login')}>
+            <FindingsPage initialFindingId={selectedFindingId} />
           </ProtectedRoute>
         )}
       </main>

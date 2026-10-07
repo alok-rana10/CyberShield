@@ -41,13 +41,27 @@ class SecurityFinding(Base):
     )
     severity: Mapped[str] = mapped_column(
         String(20),
-        default="MEDIUM",
+        default="medium",
         nullable=False,
         index=True,
+    )
+    category: Mapped[str] = mapped_column(
+        String(100),
+        default="general",
+        nullable=False,
+        index=True,
+    )
+    affected_resource: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
     )
     remediation: Mapped[str] = mapped_column(
         Text,
         nullable=False,
+    )
+    evidence: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
     )
     cwe_id: Mapped[str | None] = mapped_column(
         String(50),
@@ -55,13 +69,24 @@ class SecurityFinding(Base):
     )
     status: Mapped[str] = mapped_column(
         String(30),
-        default="OPEN",
+        default="open",
         nullable=False,
+        index=True,
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=utc_now,
         nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=utc_now,
+        onupdate=utc_now,
+        nullable=False,
+    )
+    resolved_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
     )
 
     # Relationships

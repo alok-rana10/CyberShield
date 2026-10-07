@@ -7,6 +7,20 @@ from app.schemas.auth import (
     UserResponse,
     TokenResponse,
 )
+from app.schemas.finding import (
+    FindingSeverity,
+    FindingStatus,
+    FindingCreate,
+    FindingUpdate,
+    FindingStatusUpdate,
+    FindingResponse,
+    FindingListResponse,
+)
+from app.schemas.dashboard import (
+    SeverityCounts,
+    StatusCounts,
+    DashboardSummaryResponse,
+)
 
 __all__ = [
     "UserRole",
@@ -14,4 +28,14 @@ __all__ = [
     "UserLoginRequest",
     "UserResponse",
     "TokenResponse",
+    "FindingSeverity",
+    "FindingStatus",
+    "FindingCreate",
+    "FindingUpdate",
+    "FindingStatusUpdate",
+    "FindingResponse",
+    "FindingListResponse",
+    "SeverityCounts",
+    "StatusCounts",
+    "DashboardSummaryResponse",
 ]
