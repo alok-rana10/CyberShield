@@ -20,6 +20,11 @@ import {
   FIMCheckResponse,
   FIMRecordListResponse,
   FIMStatusSummary,
+  LogAnalysisRequest,
+  LogAnalysisResponse,
+  LogEventItem,
+  LogEventListResponse,
+  LogStatusSummary,
 } from '../types';
 
 const rawApiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
@@ -476,6 +481,146 @@ export async function getFimRecordsApi(
  */
 export async function getFimRootsApi(token: string): Promise<{ allowed_roots: string[] }> {
   const response = await fetch(`${API_BASE_URL}/api/v1/fim/roots`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Execute defensive log analysis via POST /api/v1/logs/analyze
+ */
+export async function analyzeLogsApi(
+  token: string,
+  payload: LogAnalysisRequest,
+): Promise<LogAnalysisResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/logs/analyze`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetch paginated normalized log events via GET /api/v1/logs/events
+ */
+export async function getLogEventsApi(
+  token: string,
+  params: {
+    severity?: string;
+    category?: string;
+    source_type?: string;
+    source_file?: string;
+    search?: string;
+    page?: number;
+    size?: number;
+  } = {},
+): Promise<LogEventListResponse> {
+  const query = new URLSearchParams();
+  if (params.severity && params.severity !== 'all') {
+    query.set('severity', params.severity);
+  }
+  if (params.category && params.category !== 'all') {
+    query.set('category', params.category);
+  }
+  if (params.source_type && params.source_type !== 'all') {
+    query.set('source_type', params.source_type);
+  }
+  if (params.source_file && params.source_file.trim()) {
+    query.set('source_file', params.source_file.trim());
+  }
+  if (params.search && params.search.trim()) {
+    query.set('search', params.search.trim());
+  }
+  if (params.page) {
+    query.set('page', params.page.toString());
+  }
+  if (params.size) {
+    query.set('size', params.size.toString());
+  }
+
+  const queryString = query.toString() ? `?${query.toString()}` : '';
+  const response = await fetch(`${API_BASE_URL}/api/v1/logs/events${queryString}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetch a single log event by ID via GET /api/v1/logs/events/{id}
+ */
+export async function getLogEventByIdApi(token: string, id: string): Promise<LogEventItem> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/logs/events/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Retrieve log summary metrics via GET /api/v1/logs/summary
+ */
+export async function getLogSummaryApi(token: string): Promise<LogStatusSummary> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/logs/summary`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Retrieve configured authorized log roots via GET /api/v1/logs/roots
+ */
+export async function getLogRootsApi(token: string): Promise<{ allowed_roots: string[] }> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/logs/roots`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,

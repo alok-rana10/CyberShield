@@ -29,6 +29,14 @@ class Settings(BaseSettings):
     FIM_MAX_FILE_SIZE_BYTES: int = 104857600  # 100 MB max per file
     FIM_MAX_FILES_PER_BASELINE: int = 1000  # Maximum files in a single directory baseline
 
+    # Defensive Log Analyzer Settings
+    LOG_ALLOWED_ROOTS: str = "./logs,./data/logs"
+    LOG_MAX_FILE_SIZE_BYTES: int = 52428800  # 50 MB max per log file
+    LOG_MAX_LINE_LENGTH: int = 4096  # Max line length to prevent ReDoS / memory exhaustion
+    LOG_MAX_LINES_PER_RUN: int = 50000  # Cap on lines processed in a single run
+    LOG_BRUTE_FORCE_THRESHOLD: int = 5  # Failures before triggering High finding
+    LOG_BRUTE_FORCE_WINDOW_SECONDS: int = 300  # Correlation sliding window (5 min)
+
     model_config = SettingsConfigDict(
         env_file=(".env", "../.env"),
         env_file_encoding="utf-8",
@@ -50,6 +58,21 @@ class Settings(BaseSettings):
         roots: List[str] = []
         if isinstance(self.FIM_ALLOWED_ROOTS, str):
             for r in self.FIM_ALLOWED_ROOTS.split(","):
+                cleaned = r.strip()
+                if cleaned:
+                    resolved = str(Path(cleaned).resolve())
+                    if resolved not in roots:
+                        roots.append(resolved)
+        return roots
+
+    @property
+    def log_allowed_roots_list(self) -> List[str]:
+        """Return list of authorized Log monitoring roots as absolute strings."""
+        from pathlib import Path
+
+        roots: List[str] = []
+        if isinstance(self.LOG_ALLOWED_ROOTS, str):
+            for r in self.LOG_ALLOWED_ROOTS.split(","):
                 cleaned = r.strip()
                 if cleaned:
                     resolved = str(Path(cleaned).resolve())

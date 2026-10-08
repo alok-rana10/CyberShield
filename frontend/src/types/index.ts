@@ -240,3 +240,49 @@ export interface FIMRecordListResponse {
   size: number;
   pages: number;
 }
+
+export interface LogEventItem {
+  id: string;
+  user_id: string;
+  source_type: string;
+  source_file?: string | null;
+  raw_message: string;
+  parsed_event?: Record<string, unknown> | null;
+  severity: string;
+  source_ip?: string | null;
+  username?: string | null;
+  message_summary?: string | null;
+  event_category: string;
+  event_timestamp?: string | null;
+  created_at: string;
+}
+
+export interface LogAnalysisRequest {
+  path: string;
+}
+
+export interface LogAnalysisResponse {
+  source_file: string;
+  file_name: string;
+  lines_read: number;
+  events_parsed_count: number;
+  created_findings_count: number;
+  created_finding_ids: string[];
+  events: LogEventItem[];
+}
+
+export interface LogEventListResponse {
+  items: LogEventItem[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+}
+
+export interface LogStatusSummary {
+  total_events: number;
+  severity_counts: Record<string, number>;
+  category_counts: Record<string, number>;
+  allowed_roots: string[];
+  last_analyzed_at?: string | null;
+}

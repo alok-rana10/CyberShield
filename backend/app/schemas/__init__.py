@@ -37,6 +37,14 @@ from app.schemas.fim import (
     FIMRecordListResponse,
 )
 
+from app.schemas.log_event import (
+    LogAnalysisRequest,
+    LogAnalysisResponse,
+    LogEventListResponse,
+    LogEventResponse,
+    LogStatusSummaryResponse,
+)
+
 __all__ = [
     "UserRole",
     "UserRegisterRequest",
@@ -64,4 +72,9 @@ __all__ = [
     "FIMCheckResponse",
     "FIMStatusSummaryResponse",
     "FIMRecordListResponse",
+    "LogAnalysisRequest",
+    "LogAnalysisResponse",
+    "LogEventResponse",
+    "LogEventListResponse",
+    "LogStatusSummaryResponse",
 ]

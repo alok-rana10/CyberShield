@@ -10,14 +10,15 @@ import {
   Layers,
   Globe,
   FileCheck2,
+  ScrollText,
 } from 'lucide-react';
 import { ConnectionState } from '../types';
 import { useAuth } from '../features/auth/useAuth';
 
 interface NavbarProps {
   connectionState: ConnectionState;
-  activeView: 'dashboard' | 'findings' | 'headers' | 'fim' | 'login' | 'register';
-  onNavigate: (view: 'dashboard' | 'findings' | 'headers' | 'fim' | 'login' | 'register') => void;
+  activeView: 'dashboard' | 'findings' | 'headers' | 'fim' | 'logs' | 'login' | 'register';
+  onNavigate: (view: 'dashboard' | 'findings' | 'headers' | 'fim' | 'logs' | 'login' | 'register') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ connectionState, activeView, onNavigate }) => {
@@ -51,7 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({ connectionState, activeView, onN
               <div className="flex items-center space-x-2">
                 <span className="text-xl font-bold tracking-tight text-white">CyberShield</span>
                 <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  Phase 6 Engine
+                  Phase 7 Engine
                 </span>
               </div>
               <p className="text-xs text-slate-400 hidden sm:block">
@@ -109,6 +110,18 @@ export const Navbar: React.FC<NavbarProps> = ({ connectionState, activeView, onN
               >
                 <FileCheck2 className="w-3.5 h-3.5" />
                 <span>File Integrity</span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('logs')}
+                className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                  activeView === 'logs'
+                    ? 'bg-slate-800 text-cyan-400 border border-slate-700'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                }`}
+              >
+                <ScrollText className="w-3.5 h-3.5" />
+                <span>Log Analyzer</span>
               </button>
             </nav>
           )}

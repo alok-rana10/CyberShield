@@ -9,6 +9,7 @@ import { ProtectedRoute } from '../features/auth/ProtectedRoute';
 import { FindingsPage } from '../features/findings/FindingsPage';
 import { WebSecurityHeadersPage } from '../features/headers/WebSecurityHeadersPage';
 import { FileIntegrityMonitorPage } from '../features/fim/FileIntegrityMonitorPage';
+import { LogAnalyzerPage } from '../features/logs/LogAnalyzerPage';
 import { AuthProvider } from '../features/auth/AuthContext';
 import { useAuth } from '../features/auth/useAuth';
 import { getHealthStatus, API_BASE_URL } from '../services/api';
@@ -18,7 +19,7 @@ import { UserCheck, KeyRound } from 'lucide-react';
 const AppContent: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const [activeView, setActiveView] = useState<
-    'dashboard' | 'findings' | 'headers' | 'fim' | 'login' | 'register'
+    'dashboard' | 'findings' | 'headers' | 'fim' | 'logs' | 'login' | 'register'
   >('dashboard');
   const [selectedFindingId, setSelectedFindingId] = useState<string | undefined>(undefined);
   const [health, setHealth] = useState<HealthCheckState>({
@@ -150,6 +151,7 @@ const AppContent: React.FC = () => {
                 onNavigateToHeaders={() => setActiveView('headers')}
                 onNavigateToFindings={() => setActiveView('findings')}
                 onNavigateToFim={() => setActiveView('fim')}
+                onNavigateToLogs={() => setActiveView('logs')}
               />
             </section>
           </ProtectedRoute>
@@ -170,6 +172,12 @@ const AppContent: React.FC = () => {
         {activeView === 'fim' && (
           <ProtectedRoute onNavigateToLogin={() => setActiveView('login')}>
             <FileIntegrityMonitorPage onNavigateToFindings={() => setActiveView('findings')} />
+          </ProtectedRoute>
+        )}
+
+        {activeView === 'logs' && (
+          <ProtectedRoute onNavigateToLogin={() => setActiveView('login')}>
+            <LogAnalyzerPage onNavigateToFindings={() => setActiveView('findings')} />
           </ProtectedRoute>
         )}
       </main>

@@ -50,6 +50,20 @@ class LogEvent(Base):
         String(45),
         nullable=True,
     )
+    source_file: Mapped[str | None] = mapped_column(
+        String(1024),
+        nullable=True,
+        index=True,
+    )
+    username: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+        index=True,
+    )
+    message_summary: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True,
+    )
     event_category: Mapped[str] = mapped_column(
         String(50),
         nullable=False,
