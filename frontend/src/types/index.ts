@@ -286,3 +286,56 @@ export interface LogStatusSummary {
   allowed_roots: string[];
   last_analyzed_at?: string | null;
 }
+
+export interface ScanPortResult {
+  port: number;
+  status: string;
+  service?: string | null;
+}
+
+export interface ScanCreateRequest {
+  target: string;
+  ports?: number[];
+  port_preset?: string;
+  authorization_confirmed: boolean;
+}
+
+export interface ScanResponse {
+  id: string;
+  user_id: string;
+  target_host: string;
+  scan_type: string;
+  status: string;
+  open_ports: number[];
+  scanned_ports: number[];
+  port_details: ScanPortResult[];
+  total_ports_scanned: number;
+  open_ports_count: number;
+  scan_duration_ms?: number | null;
+  authorization_confirmed: boolean;
+  created_at: string;
+  created_findings_count: number;
+  created_finding_ids: string[];
+}
+
+export interface ScanListResponse {
+  items: ScanResponse[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+}
+
+export interface ScanSummaryResponse {
+  total_scans: number;
+  total_ports_checked: number;
+  total_open_ports: number;
+  recent_scans: ScanResponse[];
+}
+
+export interface ScanScopeResponse {
+  allowed_targets: string[];
+  max_ports_per_scan: number;
+  connect_timeout_seconds: number;
+  rate_limit_per_minute: number;
+}

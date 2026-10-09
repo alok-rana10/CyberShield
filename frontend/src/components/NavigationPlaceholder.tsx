@@ -73,6 +73,7 @@ interface NavigationPlaceholderProps {
   onNavigateToFindings?: () => void;
   onNavigateToFim?: () => void;
   onNavigateToLogs?: () => void;
+  onNavigateToScans?: () => void;
 }
 
 export const NavigationPlaceholder: React.FC<NavigationPlaceholderProps> = ({
@@ -80,6 +81,7 @@ export const NavigationPlaceholder: React.FC<NavigationPlaceholderProps> = ({
   onNavigateToFindings,
   onNavigateToFim,
   onNavigateToLogs,
+  onNavigateToScans,
 }) => {
   return (
     <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 shadow-xl backdrop-blur">
@@ -101,8 +103,9 @@ export const NavigationPlaceholder: React.FC<NavigationPlaceholderProps> = ({
           const isFindings = mod.name === 'Security Findings Aggregator';
           const isFim = mod.name === 'File Integrity Monitor';
           const isLogs = mod.name === 'Defensive Log Analyzer';
+          const isScans = mod.name === 'Authorized Network Scanner';
           const isAuth = mod.name === 'Audit Trail & Compliance';
-          const isOperational = isHeaders || isFindings || isFim || isLogs;
+          const isOperational = isHeaders || isFindings || isFim || isLogs || isScans;
 
           return (
             <div
@@ -168,6 +171,13 @@ export const NavigationPlaceholder: React.FC<NavigationPlaceholderProps> = ({
                     className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline flex items-center space-x-1"
                   >
                     <span>Launch Analyzer →</span>
+                  </button>
+                ) : isScans ? (
+                  <button
+                    onClick={onNavigateToScans}
+                    className="text-cyan-400 hover:text-cyan-300 font-semibold hover:underline flex items-center space-x-1"
+                  >
+                    <span>Launch Scanner →</span>
                   </button>
                 ) : isAuth ? (
                   <span className="text-slate-400">Security Layer Active</span>

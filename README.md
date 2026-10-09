@@ -26,7 +26,8 @@ CyberShield is an enterprise-grade, web-based defensive cybersecurity monitoring
 - **Phase 5 — Web Security Header Analyzer & SSRF Protection** ✅
 - **Phase 6 — File Integrity Monitor (FIM) & SHA-256 Tamper Detection** ✅
 - **Phase 7 — Defensive Log Analyzer & Threat Signature Engine** ✅
-- **Current Milestone**: Completed defensive log parser with strict directory containment (`LOG_ALLOWED_ROOTS`), streaming line-by-line processing with ReDoS and buffer bounding, multi-format normalization (auth/ssh/sudo, Apache/Nginx web access, syslog), automated brute-force / web reconnaissance / access-denied detection with automatic finding creation in the Findings Engine, and full frontend UI.
+- **Phase 8 — Authorized Network Scanner & Perimeter Diagnostics** ✅
+- **Current Milestone**: Completed defensive, non-destructive TCP connect scanner for authorized assets only (`SCAN_ALLOWED_TARGETS`). Features server-side target resolution and policy enforcement, unconditional cloud metadata and broadcast blocking, bounded port counts and rate limits, well-known service mapping, selective findings engine integration for confirmed cleartext protocols (Telnet/FTP) and exposed databases without false positives on normal services, and dedicated frontend UI.
 
 ---
 
@@ -165,6 +166,5 @@ docker compose up --build
 
 ## Next Steps
 
-Following the successful completion, security hardening, and verification of **Phase 7 (Defensive Log Analyzer)**, the platform is prepared for future defensive capabilities:
-- **Phase 8 — Authorized Network Scanner (Non-destructive port & service discovery)**
-- **Phase 9 — Password Security Analyzer & Executive Report Generator**
+Following the successful completion, security hardening, and verification of **Phase 8 (Authorized Network Scanner)**, the platform is prepared for future defensive capabilities:
+- **Phase 9 — Password Security Analyzer & Executive Report Generator (Entropy analysis, defensive audit, and PDF/JSON compliance reporting)**

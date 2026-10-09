@@ -37,6 +37,14 @@ class Settings(BaseSettings):
     LOG_BRUTE_FORCE_THRESHOLD: int = 5  # Failures before triggering High finding
     LOG_BRUTE_FORCE_WINDOW_SECONDS: int = 300  # Correlation sliding window (5 min)
 
+    # Authorized Network Scanner Settings
+    SCAN_ALLOWED_TARGETS: str = "127.0.0.1,localhost,::1"
+    SCAN_MAX_PORTS_PER_SCAN: int = 100  # Maximum ports per scan job
+    SCAN_CONNECT_TIMEOUT_SECONDS: float = 1.5  # Timeout per TCP connect attempt
+    SCAN_MAX_CONCURRENCY: int = 20  # Max concurrent TCP sockets
+    SCAN_RATE_LIMIT_PER_MINUTE: int = 10  # Max scans per minute per user
+    SCAN_TOTAL_TIMEOUT_SECONDS: int = 30  # Max overall duration per scan job
+
     model_config = SettingsConfigDict(
         env_file=(".env", "../.env"),
         env_file_encoding="utf-8",
@@ -79,6 +87,17 @@ class Settings(BaseSettings):
                     if resolved not in roots:
                         roots.append(resolved)
         return roots
+
+    @property
+    def scan_allowed_targets_list(self) -> List[str]:
+        """Return list of authorized scan targets from comma-separated setting."""
+        targets: List[str] = []
+        if isinstance(self.SCAN_ALLOWED_TARGETS, str):
+            for t in self.SCAN_ALLOWED_TARGETS.split(","):
+                cleaned = t.strip()
+                if cleaned and cleaned not in targets:
+                    targets.append(cleaned)
+        return targets
 
 
 @lru_cache

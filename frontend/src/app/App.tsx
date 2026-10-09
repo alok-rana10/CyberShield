@@ -10,6 +10,7 @@ import { FindingsPage } from '../features/findings/FindingsPage';
 import { WebSecurityHeadersPage } from '../features/headers/WebSecurityHeadersPage';
 import { FileIntegrityMonitorPage } from '../features/fim/FileIntegrityMonitorPage';
 import { LogAnalyzerPage } from '../features/logs/LogAnalyzerPage';
+import { NetworkScannerPage } from '../features/scans/NetworkScannerPage';
 import { AuthProvider } from '../features/auth/AuthContext';
 import { useAuth } from '../features/auth/useAuth';
 import { getHealthStatus, API_BASE_URL } from '../services/api';
@@ -19,7 +20,7 @@ import { UserCheck, KeyRound } from 'lucide-react';
 const AppContent: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const [activeView, setActiveView] = useState<
-    'dashboard' | 'findings' | 'headers' | 'fim' | 'logs' | 'login' | 'register'
+    'dashboard' | 'findings' | 'headers' | 'fim' | 'logs' | 'scans' | 'login' | 'register'
   >('dashboard');
   const [selectedFindingId, setSelectedFindingId] = useState<string | undefined>(undefined);
   const [health, setHealth] = useState<HealthCheckState>({
@@ -152,6 +153,7 @@ const AppContent: React.FC = () => {
                 onNavigateToFindings={() => setActiveView('findings')}
                 onNavigateToFim={() => setActiveView('fim')}
                 onNavigateToLogs={() => setActiveView('logs')}
+                onNavigateToScans={() => setActiveView('scans')}
               />
             </section>
           </ProtectedRoute>
@@ -178,6 +180,12 @@ const AppContent: React.FC = () => {
         {activeView === 'logs' && (
           <ProtectedRoute onNavigateToLogin={() => setActiveView('login')}>
             <LogAnalyzerPage onNavigateToFindings={() => setActiveView('findings')} />
+          </ProtectedRoute>
+        )}
+
+        {activeView === 'scans' && (
+          <ProtectedRoute onNavigateToLogin={() => setActiveView('login')}>
+            <NetworkScannerPage onNavigateToFindings={() => setActiveView('findings')} />
           </ProtectedRoute>
         )}
       </main>

@@ -25,6 +25,11 @@ import {
   LogEventItem,
   LogEventListResponse,
   LogStatusSummary,
+  ScanCreateRequest,
+  ScanListResponse,
+  ScanResponse,
+  ScanScopeResponse,
+  ScanSummaryResponse,
 } from '../types';
 
 const rawApiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
@@ -635,3 +640,118 @@ export async function getLogRootsApi(token: string): Promise<{ allowed_roots: st
 
   return response.json();
 }
+
+/**
+ * Execute an authorized TCP network scan via POST /api/v1/scans
+ */
+export async function runNetworkScanApi(
+  token: string,
+  payload: ScanCreateRequest,
+): Promise<ScanResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/scans`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * List paginated historical network scans via GET /api/v1/scans
+ */
+export async function getNetworkScansApi(
+  token: string,
+  page = 1,
+  size = 20,
+): Promise<ScanListResponse> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString(),
+  });
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/scans?${params.toString()}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetch a single scan by ID via GET /api/v1/scans/{id}
+ */
+export async function getNetworkScanByIdApi(token: string, id: string): Promise<ScanResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/scans/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Retrieve aggregated scan metrics via GET /api/v1/scans/summary
+ */
+export async function getNetworkScanSummaryApi(token: string): Promise<ScanSummaryResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/scans/summary`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+/**
+ * Retrieve configured authorized scan scope via GET /api/v1/scans/scope
+ */
+export async function getNetworkScanScopeApi(token: string): Promise<ScanScopeResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/scans/scope`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const detail = await parseErrorDetail(response);
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+

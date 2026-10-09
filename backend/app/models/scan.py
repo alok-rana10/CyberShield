@@ -48,6 +48,26 @@ class ScanResult(Base):
         default=list,
         nullable=False,
     )
+    scanned_ports: Mapped[List[Any] | None] = mapped_column(
+        JSON,
+        default=list,
+        nullable=True,
+    )
+    port_details: Mapped[List[Any] | None] = mapped_column(
+        JSON,
+        default=list,
+        nullable=True,
+    )
+    total_ports_scanned: Mapped[int | None] = mapped_column(
+        Integer,
+        default=0,
+        nullable=True,
+    )
+    open_ports_count: Mapped[int | None] = mapped_column(
+        Integer,
+        default=0,
+        nullable=True,
+    )
     scan_duration_ms: Mapped[int | None] = mapped_column(
         Integer,
         nullable=True,

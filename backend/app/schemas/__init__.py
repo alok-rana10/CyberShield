@@ -44,6 +44,14 @@ from app.schemas.log_event import (
     LogEventResponse,
     LogStatusSummaryResponse,
 )
+from app.schemas.scan import (
+    ScanCreateRequest,
+    ScanListResponse,
+    ScanPortResult,
+    ScanResponse,
+    ScanScopeResponse,
+    ScanSummaryResponse,
+)
 
 __all__ = [
     "UserRole",
@@ -77,4 +85,10 @@ __all__ = [
     "LogEventResponse",
     "LogEventListResponse",
     "LogStatusSummaryResponse",
+    "ScanPortResult",
+    "ScanCreateRequest",
+    "ScanResponse",
+    "ScanListResponse",
+    "ScanSummaryResponse",
+    "ScanScopeResponse",
 ]
