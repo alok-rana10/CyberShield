@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 from typing import List
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -50,6 +51,43 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+    @model_validator(mode="after")
+    def validate_production_security(self) -> "Settings":
+        """Enforce strict production security configuration controls."""
+        if self.APP_ENV.lower() == "production":
+            if self.DEBUG:
+                raise ValueError(
+                    "Security configuration error: DEBUG must be False in production environments."
+                )
+
+            insecure_placeholders = [
+                "change-in-production",
+                "cybershield-dev",
+                "secret-key-change",
+                "dev-secret",
+                "default",
+                "example",
+            ]
+            if len(self.JWT_SECRET_KEY) < 32:
+                raise ValueError(
+                    "Security configuration error: JWT_SECRET_KEY must be "
+                    "at least 32 characters in production."
+                )
+
+            if any(marker in self.JWT_SECRET_KEY.lower() for marker in insecure_placeholders):
+                raise ValueError(
+                    "Security configuration error: Insecure or default JWT_SECRET_KEY "
+                    "detected in production. Generate a cryptographically secure random key."
+                )
+
+            if "*" in self.cors_origins_list:
+                raise ValueError(
+                    "Security configuration error: CORS_ORIGINS cannot contain "
+                    "wildcard '*' in production."
+                )
+
+        return self
 
     @property
     def cors_origins_list(self) -> List[str]:

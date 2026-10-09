@@ -39,6 +39,15 @@ export const API_BASE_URL = rawApiBase.replace(/\/+$/, '');
  * Helper to parse error details from API responses
  */
 async function parseErrorDetail(response: Response): Promise<string> {
+  // If session has expired or token is invalid on an authenticated request, broadcast unauthorized event
+  if (
+    response.status === 401 &&
+    typeof window !== 'undefined' &&
+    !(response.url || '').includes('/auth/login')
+  ) {
+    window.dispatchEvent(new CustomEvent('cybershield:unauthorized'));
+  }
+
   try {
     const errorData = await response.json();
     if (typeof errorData.detail === 'string') {

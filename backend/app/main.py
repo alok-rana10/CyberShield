@@ -1,6 +1,7 @@
 """Main FastAPI application entrypoint for CyberShield."""
 
-from fastapi import FastAPI, Request, status
+import logging
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -13,6 +14,7 @@ from app.routes.fim import router as fim_router
 from app.routes.logs import router as logs_router
 from app.routes.scans import router as scans_router
 
+logger = logging.getLogger("cybershield")
 settings = get_settings()
 
 app = FastAPI(
@@ -56,10 +58,24 @@ async def health_check() -> dict:
     }
 
 
-# Basic Secure Error Handling
+# Secure Error Handling without Information Disclosure
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Handle unexpected server errors without leaking internal stack traces."""
+    if isinstance(exc, HTTPException):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail},
+            headers=getattr(exc, "headers", None) or {},
+        )
+
+    logger.error(
+        "Unhandled server error on %s %s: %s",
+        request.method,
+        request.url.path,
+        exc,
+        exc_info=True,
+    )
     detail = str(exc) if settings.DEBUG else "An unexpected internal error occurred."
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

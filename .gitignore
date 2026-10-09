@@ -32,8 +32,9 @@ env/
 
 # Environment variables & secrets
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+*.env
 
 # Node / Frontend
 node_modules/
@@ -44,6 +45,13 @@ yarn-error.log*
 .vite/
 
 # Database files & caches
+*.db
+*.sqlite3
+**/data/*.db
+**/data/*.sqlite3
+**/data/*.db-journal
+**/data/*.db-wal
+**/data/*.db-shm
 data/*.db
 data/*.sqlite3
 data/*.db-journal
@@ -51,6 +59,8 @@ data/*.db-wal
 data/*.db-shm
 
 # Generated artifacts & logs
+*.log
+**/logs/*.log
 logs/*.log
 reports/*.pdf
 reports/*.json

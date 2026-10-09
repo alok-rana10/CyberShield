@@ -52,11 +52,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return newUser;
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
     setToken(null);
     setUser(null);
-  };
+  }, []);
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      logout();
+    };
+    window.addEventListener('cybershield:unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('cybershield:unauthorized', handleUnauthorized);
+    };
+  }, [logout]);
 
   const refreshUser = async () => {
     if (!token) return;
