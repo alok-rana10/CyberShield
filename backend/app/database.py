@@ -9,18 +9,33 @@ from app.config import get_settings
 
 settings = get_settings()
 
-# Normalize SQLite database path relative to project root
-db_url = settings.DATABASE_URL
+
+def normalize_database_url(url: str) -> str:
+    """Normalize database URL for driver and dialect compatibility.
+
+    Rewrites legacy 'postgres://' or driver-less 'postgresql://' to
+    'postgresql+psycopg2://' to guarantee compatibility with Render and SQLAlchemy 2.0.
+    Normalizes local SQLite paths relative to project root.
+    """
+    if url.startswith("postgres://"):
+        return url.replace("postgres://", "postgresql+psycopg2://", 1)
+    if url.startswith("postgresql://") and "+psycopg2" not in url and "+psycopg" not in url:
+        return url.replace("postgresql://", "postgresql+psycopg2://", 1)
+    if url.startswith("sqlite"):
+        if "///./data/" in url or "///data/" in url:
+            root_dir = Path(__file__).resolve().parent.parent.parent
+            data_dir = root_dir / "data"
+            data_dir.mkdir(parents=True, exist_ok=True)
+            db_file = data_dir / "cybershield.db"
+            return f"sqlite:///{db_file.as_posix()}"
+    return url
+
+
+db_url = normalize_database_url(settings.DATABASE_URL)
 connect_args = {}
 
 if db_url.startswith("sqlite"):
     connect_args["check_same_thread"] = False
-    if "///./data/" in db_url or "///data/" in db_url:
-        root_dir = Path(__file__).resolve().parent.parent.parent
-        data_dir = root_dir / "data"
-        data_dir.mkdir(parents=True, exist_ok=True)
-        db_file = data_dir / "cybershield.db"
-        db_url = f"sqlite:///{db_file.as_posix()}"
 
 engine = create_engine(
     db_url,

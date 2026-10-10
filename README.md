@@ -1,25 +1,135 @@
-# CyberShield — Defensive Cybersecurity Monitoring & Assessment Platform
+# CyberShield â€” Defensive Cybersecurity Monitoring & Assessment Platform
 
-CyberShield is an enterprise-grade, web-based defensive cybersecurity monitoring and security assessment platform. Engineered strictly for defensive operations, CyberShield provides non-destructive security posture diagnostics, cryptographic file integrity monitoring, log correlation and threat detection, web security header evaluation with mandatory anti-SSRF protections, and policy-governed network port discovery for authorized assets.
+[![Python](https://img.shields.io/badge/Python-3.12%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-18.3-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF.svg?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC.svg?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-119%20Passed%20%7C%201%20Skipped-success.svg)](#testing--quality-assurance)
+
+CyberShield is a defensive cybersecurity monitoring and posture assessment platform engineered for authorized security environments. Built with a **FastAPI** asynchronous backend and a **React 18 + TypeScript** single-page frontend, CyberShield delivers automated security diagnostics, cryptographic file integrity baselining, multi-format log parsing with brute-force correlation, HTTP header hardening analysis with anti-SSRF transport enforcement, and policy-restricted TCP port discovery.
 
 ---
 
 > [!CAUTION]
-> **DEFENSIVE SECURITY DISCLAIMER & CODE OF CONDUCT**  
-> CyberShield is engineered exclusively as a **defensive security monitoring platform**. It does **NOT** contain, support, or permit:
-> - Malware, ransomware, or exploit delivery payloads
-> - Credential harvesting, credential theft, or credential stuffing
-> - Brute-force password cracking, dictionary attacks, or keylogging
-> - Stealth port scanning, packet flooding, or IDS/IPS evasion
-> - Data exfiltration or destructive system alterations  
+> ### Responsible-Use Disclaimer & Code of Conduct
+> **CyberShield is engineered strictly for authorized, defensive cybersecurity operations.**
 >
-> All diagnostic scans, integrity baselines, log evaluations, and header assessments must only operate on systems, networks, files, and domains that the operator owns or has explicit, documented authorization to assess.
+> Scanning, monitoring, and diagnostic assessments must **only** be performed on systems, networks, files, and domains that the operator owns or has explicit, documented authorization to assess.
+>
+> This platform does **NOT** contain, support, or permit:
+> - Exploitation payloads, arbitrary code execution, or malware delivery
+> - Credential theft, harvesting, brute-forcing, or dictionary attacks
+> - Stealth scanning, SYN flood techniques, or IDS/IPS evasion mechanisms
+> - Destructive file alterations or unauthorized privilege escalation
+>
+> All diagnostic modules enforce strict boundary guards (pre-request DNS validation, RFC 1918 / loopback blocking, canonical path isolation, and target whitelisting) to ensure assessments remain non-destructive and contained.
 
 ---
 
-## Architecture Overview
+## Table of Contents
 
-CyberShield implements a clean, layered architecture separating presentation, security boundary enforcement, assessment engines, and transactional persistence.
+- [Project Overview](#project-overview)
+- [Key Defensive Features](#key-defensive-features)
+  - [1. Web Security Header Analyzer & SSRF Guard](#1-web-security-header-analyzer--ssrf-guard)
+  - [2. Cryptographic File Integrity Monitor (FIM)](#2-cryptographic-file-integrity-monitor-fim)
+  - [3. Defensive Log Analyzer & Threat Correlator](#3-defensive-log-analyzer--threat-correlator)
+  - [4. Policy-Governed Network Scanner](#4-policy-governed-network-scanner)
+  - [5. Central Security Findings Engine & Dashboard](#5-central-security-findings-engine--dashboard)
+  - [6. Authentication, RBAC & Tamper-Evident Audit Logging](#6-authentication-rbac--tamper-evident-audit-logging)
+- [System Architecture](#system-architecture)
+- [Technology Stack](#technology-stack)
+- [Project Directory Structure](#project-directory-structure)
+- [Prerequisites & System Requirements](#prerequisites--system-requirements)
+- [Local Setup & Installation (Windows PowerShell)](#local-setup--installation-windows-powershell)
+  - [Step 1: Environment Configuration](#step-1-environment-configuration)
+  - [Step 2: Backend Setup & Database Migration](#step-2-backend-setup--database-migration)
+  - [Step 3: Frontend Setup & Development Server](#step-3-frontend-setup--development-server)
+- [Environment Configuration Reference](#environment-configuration-reference)
+- [Testing & Quality Assurance](#testing--quality-assurance)
+- [REST API Specification](#rest-api-specification)
+- [Production Deployment on Render](#production-deployment-on-render)
+- [Security Architecture & Boundary Controls](#security-architecture--boundary-controls)
+- [Factual Security Posture & Known Limitations](#factual-security-posture--known-limitations)
+- [License](#license)
+
+---
+
+## Project Overview
+
+Modern defense-in-depth requires continuous verification across multiple system layers: web application perimeter posture, host-level filesystem integrity, system authentication telemetry, and network port exposure.
+
+CyberShield aggregates these critical defensive disciplines into a unified operational dashboard:
+* **Perimeter Defense**: Evaluates public HTTP response headers against OWASP secure header recommendations with built-in anti-SSRF socket transport controls.
+* **Host Integrity**: Creates cryptographically verifiable baselines using SHA-256 to instantly detect file alterations, additions, or deletions in sensitive directories.
+* **Audit & Log Telemetry**: Ingests authentication and access logs to correlate threat signals, such as brute-force authentication bursts and web path traversals.
+* **Network Visibility**: Conducts non-destructive TCP connect checks restricted strictly to operator-authorized loopback or internal infrastructure.
+* **Security Triage**: Feeds diagnostic results into a central findings registry equipped with severity classifications, CWE tags, and remediation advisories.
+
+---
+
+## Key Defensive Features
+
+### 1. Web Security Header Analyzer & SSRF Guard
+* **Comprehensive Header Auditing**: Inspects target endpoints for six critical security headers:
+  * `Content-Security-Policy` (CSP)
+  * `Strict-Transport-Security` (HSTS)
+  * `X-Frame-Options` (Clickjacking prevention)
+  * `X-Content-Type-Options` (MIME-sniffing protection)
+  * `Referrer-Policy` (Referrer leakage defense)
+  * `Permissions-Policy` (Browser API access control)
+* **Hardening Scorecard**: Computes a weighted numerical score (0â€“100) and letter grade (`A+` through `F`) with actionable remediation guidance.
+* **Multi-Stage SSRF Defense**:
+  * **Pre-connection DNS Resolution**: Resolves target hostnames prior to socket creation.
+  * **Prohibited IP Validation**: Blocks loopback (`127.0.0.0/8`, `::1`), private RFC 1918 subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), link-local, multicast, and cloud metadata services (`169.254.169.254`, `metadata.google.internal`).
+  * **DNS Rebinding Prevention**: Uses a custom synchronous HTTP transport pinning validated IP addresses directly to the connection socket.
+  * **NAT64 / IPv4-Mapped Handling**: Inspects embedded IPv4 addresses in `64:ff9b::/96` ranges to allow legitimate translated destinations while blocking prohibited internal destinations.
+  * **Strict Port Bounding**: Allows connections exclusively to standard web ports (`80` and `443`).
+
+### 2. Cryptographic File Integrity Monitor (FIM)
+* **Cryptographic Baselining**: Computes SHA-256 hashes and filesystem metadata (size, modification time) across authorized directories.
+* **Tamper Detection**: Identifies modified files (hash mismatches), newly created unauthorized files, and removed critical files.
+* **Automated Finding Pipeline**: Automatically generates High/Medium security findings containing exact cryptographic hash evidence upon detecting unauthorized modifications.
+* **Filesystem Containment**: Constrains scans strictly within configured `FIM_ALLOWED_ROOTS`, rejecting directory traversal (`../`) and symbolic link escapes. File size caps prevent memory exhaustion denial-of-service.
+
+### 3. Defensive Log Analyzer & Threat Correlator
+* **Multi-Format Parsing**: Ingests authentication logs, Nginx/Apache access logs, and generic syslog formats.
+* **Threat Correlation Rules**:
+  * **Brute-Force Detection**: Correlates authentication failures within a sliding time window (triggers High finding when failures exceed threshold).
+  * **Web Application Probing**: Identifies directory traversal sequences, SQL injection artifacts, and automated scanner signatures.
+  * **Access Denied Spikes**: Flags repeated authorization failures and privilege escalation attempts.
+* **Safe Evidence Extraction**: Attaches redacted raw log line excerpts and source IP telemetry to generated findings for verifiable post-incident review.
+* **Resource Safeguards**: Limits processed file sizes (`LOG_MAX_FILE_SIZE_BYTES`), enforces maximum line lengths (`LOG_MAX_LINE_LENGTH`), and caps processed lines per run to prevent ReDoS or memory exhaustion.
+
+### 4. Policy-Governed Network Scanner
+* **Defensive TCP Handshake Probing**: Uses standard OS-level three-way TCP connect calls (`socket.connect_ex`) without raw socket manipulation, SYN flooding, or packet crafting.
+* **Strict Target Policy**: Restricts scan targets strictly to whitelist-configured assets (`SCAN_ALLOWED_TARGETS`, defaulting to `127.0.0.1`, `localhost`, `::1`). External or unapproved targets are rejected with HTTP 403 Forbidden.
+* **Attestation Requirement**: Enforces mandatory operator authorization confirmation for every scan request.
+* **Operational Limits**: Caps maximum ports per scan (100 ports), enforces per-port socket connect timeouts (1.5s), and applies sliding-window user rate limiting.
+* **High-Risk Port Findings**: Generates findings for confirmed cleartext protocols (Telnet port 23, cleartext FTP port 21) and exposed database interfaces.
+
+### 5. Central Security Findings Engine & Dashboard
+* **Unified Finding Schema**: Standardizes findings across all assessment engines (`web_security`, `integrity`, `authentication`, `network`, `general`).
+* **Severity Triage**: Classifies findings into `critical`, `high`, `medium`, `low`, and `informational`.
+* **Lifecycle Management**: Tracks finding statuses across `open`, `investigating`, `resolved`, and `false_positive` states with operator attribution.
+* **Executive Posture Dashboard**: Aggregates real-time security metrics, severity breakdown charts, engine operational statuses, and recent audit activity.
+
+### 6. Authentication, RBAC & Tamper-Evident Audit Logging
+* **Argon2id Hashing**: Uses state-of-the-art Argon2id password hashing with unique salt and strict password complexity rules (uppercase, lowercase, digit, special character).
+* **JWT Lifecycle**: Issues signed JSON Web Tokens requiring `sub`, `exp`, and `iat` claims. Expired or forged tokens return `401 Unauthorized` with `WWW-Authenticate: Bearer` headers.
+* **Role-Based Access Control (RBAC)**:
+  * **Admin**: Complete platform control, user management, and authorization to permanently delete findings.
+  * **Analyst**: Can initiate analyses, create baselines, run scans, and update finding statuses. Cannot delete findings.
+  * **Viewer**: Read-only visibility across dashboards, findings, and logs. Cannot trigger scans or mutate state.
+* **Audit Trail**: Immutable database audit table recording action names, actor IDs, client IP addresses, user agents, and timestamps. Sensitive keys (passwords, tokens, API keys) are recursively redacted before storage.
+
+---
+
+## System Architecture
+
+CyberShield implements a clean, layered architecture separating user interface presentation, security perimeter gateways, assessment engines, and transactional persistence.
 
 ```mermaid
 flowchart TD
@@ -47,7 +157,7 @@ flowchart TD
         FindSvc["Findings Engine & Triage Service"]
         HeadSvc["Header Analyzer & SSRF Transport Guard"]
         FimSvc["File Integrity Monitor (SHA-256 Hashes)"]
-        LogSvc["Defensive Log Analyzer & Pattern Engine"]
+        LogSvc["Defensive Log Analyzer & Threat Correlator"]
         ScanSvc["Authorized Network Scanner (TCP Connect)"]
     end
 
@@ -76,165 +186,112 @@ flowchart TD
 
 ---
 
-## Core Defensive Modules
-
-### 1. Authentication, RBAC & Audit Logging
-- **Password Security**: Argon2id password hashing with unique salt; strict password complexity validation (minimum 8 characters, uppercase, lowercase, digit, and special character). Passwords and password hashes are never returned in API responses or written to logs.
-- **Token Lifecycle**: Signed JSON Web Tokens (PyJWT) requiring `sub`, `exp`, and `iat` claims. Expired or forged tokens return `401 Unauthorized` with `WWW-Authenticate: Bearer` headers.
-- **Frontend Session Lifecycle**: Event-driven token interceptor that detects `401 Unauthorized` responses and automatically evicts session tokens from `sessionStorage`, redirecting the operator cleanly to the login interface.
-- **Role-Based Access Control (RBAC)**:
-  - `Admin`: Full platform control, user management, and permanent deletion of findings.
-  - `Analyst`: Operational triage, header analysis, FIM baseline management, log analysis, and network scanning. Forbidden from deleting findings.
-  - `Viewer`: Read-only access to all dashboards, finding details, assessment histories, and scopes. Strictly forbidden from creating findings, running scans, or mutating state (HTTP 403).
-- **Tamper-Evident Audit Logging**: Immutable database audit trail capturing action, actor ID, client IP address, user agent, and timestamp. Recursive sanitization redacts sensitive fields matching passwords, tokens, API keys, and hashes.
-
-### 2. Central Security Findings Registry & Posture Dashboard
-- **Standardized Finding Schema**: Unified categorization across all defensive engines (`web_security`, `integrity`, `authentication`, `network`, `general`).
-- **Severity Classification**: `critical`, `high`, `medium`, `low`, and `informational`.
-- **Lifecycle Tracking**: State transitions between `open`, `resolved`, and `accepted` with resolution timestamps and operator attribution.
-- **Defensive Triage**: Rich search and filtering by severity, lifecycle status, category, originating module, and affected resource. Actionable remediation advice and diagnostic evidence are stored with each finding.
-- **Posture Dashboard**: Real-time aggregated metrics displaying total findings, open vs. resolved ratios, severity distributions, and recent assessment highlights.
-
-### 3. Web Security Header Analyzer & SSRF Protection
-- **Evaluated Headers**: Evaluates presence and configuration of 6 critical web security headers:
-  - `Content-Security-Policy` (CSP)
-  - `Strict-Transport-Security` (HSTS)
-  - `X-Frame-Options` (Clickjacking defense)
-  - `X-Content-Type-Options` (MIME-sniffing prevention)
-  - `Referrer-Policy` (Referrer leakage control)
-  - `Permissions-Policy` (Browser feature restriction)
-- **Hardening Scoring**: Weighted letter grading (`A+` through `F`) and numerical score (0–100) with automatic generation of remediable findings for missing or weak headers.
-- **Mandatory SSRF Protection**:
-  - Pre-connection DNS validation resolving hostnames to IP addresses before making socket requests.
-  - Unconditional blocking of loopback addresses (`127.0.0.1`, `::1`), private RFC1918 networks (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), link-local addresses, multicast, and cloud metadata endpoints (`169.254.169.254`, `metadata.google.internal`).
-  - Standard web port restriction (strictly ports 80 and 443).
-  - DNS rebinding prevention via custom synchronous transport pinning the validated IP address to the outbound connection socket.
-  - Safe translation and inspection of IPv4-mapped / NAT64 IPv6 addresses (`64:ff9b::/96`).
-
-### 4. File Integrity Monitor (FIM)
-- **Cryptographic Baseline**: Computes SHA-256 cryptographic hashes and metadata for files within authorized directories.
-- **Tamper Detection**: Detects file alterations (hash mismatch), newly created unauthorized files, and deleted critical files.
-- **Automated Correlation**: Generates high-severity security findings with cryptographic hash evidence upon detecting unexpected file tampering.
-- **Filesystem Boundaries**: Path containment strictly enforced within configured `FIM_ALLOWED_ROOTS`. Blocks path traversal sequences (`../`), directory escapes, and symbolic link redirection. File size limits prevent denial-of-service via memory exhaustion.
-
-### 5. Defensive Log Analyzer
-- **Multi-Format Ingestion**: Ingests and normalizes authentication logs, web server access logs (Nginx/Apache), and system authorization events.
-- **Threat Detection Engine**:
-  - Brute-force authentication detection using sliding-window correlation (triggers High finding when failures exceed configurable threshold within time window).
-  - Web application probing detection (SQL injection strings, directory traversal patterns, script scanning).
-  - Access denial and authorization failure correlation.
-- **Correlated Findings**: Generates findings attributed to specific source IP addresses with raw log line excerpts attached as verifiable evidence.
-- **Containment & Resource Limits**: Enforces path containment within `LOG_ALLOWED_ROOTS`, maximum file size caps (`LOG_MAX_FILE_SIZE_BYTES`), line length caps (`LOG_MAX_LINE_LENGTH`), and maximum processed lines per run (`LOG_MAX_LINES_PER_RUN`).
-
-### 6. Authorized Network Scanner
-- **Defensive TCP Connect Checks**: Performs standard, non-destructive three-way TCP handshake probes without raw sockets, SYN floods, or evasion techniques.
-- **Target Policy Enforcement**: Probes are restricted strictly to explicitly authorized targets configured in `SCAN_ALLOWED_TARGETS`. Unauthorized targets and public IP scans without prior whitelisting return HTTP 403 Forbidden.
-- **Operational Safety Controls**:
-  - Mandatory operator confirmation checkbox required for each scan request.
-  - Unconditional blocking of cloud metadata (`169.254.169.254`), multicast, and broadcast addresses.
-  - Port count bounding (maximum 100 ports per scan) and individual socket connect timeouts.
-  - Sliding-window rate limiting per operator.
-- **Selective Findings Generation**: Automatically creates security findings for confirmed insecure cleartext protocols (Telnet on port 23, cleartext FTP on port 21) or exposed database interfaces, while avoiding false alarms on standard web services.
-
----
-
 ## Technology Stack
 
-| Layer | Technologies & Libraries | Purpose |
-| :--- | :--- | :--- |
-| **Backend Framework** | Python 3.12+, FastAPI, Uvicorn | High-performance asynchronous REST API, OpenAPI schema generation |
-| **Data Validation** | Pydantic v2, Pydantic Settings | Strict request/response typing, environment validation, security boundaries |
-| **Database & ORM** | SQLAlchemy 2.0, Alembic, SQLite | Modern declarative ORM, migration tracking, PostgreSQL production path |
-| **Authentication** | Argon2id (`argon2-cffi`), PyJWT | Cryptographic password hashing, signed JWT session management |
-| **Network & HTTP** | HTTPX, HTTPCore | Asynchronous HTTP client, custom SSRF-safe synchronous socket transport |
-| **Frontend Framework** | React 18, TypeScript, Vite | Single-page application, strict static typing, fast HMR build tooling |
-| **Styling & UI** | Tailwind CSS, Lucide React Icons | Responsive cybersecurity dark-theme styling, accessible component icons |
-| **Testing & Quality** | Pytest, Flake8, Black, ESLint | Comprehensive unit/integration testing, strict PEP 8 and TypeScript linting |
+| Layer | Component | Technologies | Implementation Details |
+| :--- | :--- | :--- | :--- |
+| **Backend API** | Core Framework | Python 3.12+, FastAPI, Uvicorn | Async ASGI server, modular routers, OpenAPI 3.1 specification |
+| **Data Validation** | Request/Response Typing | Pydantic v2, Pydantic Settings | Strict schema enforcement, runtime environment validation |
+| **Persistence** | ORM & Migrations | SQLAlchemy 2.0, Alembic, SQLite | Modern 2.0 declarative models, batch schema migrations, PostgreSQL path |
+| **Authentication** | Cryptography & Tokens | Argon2id (`argon2-cffi`), PyJWT | Memory-hard password hashing, signed HMAC-SHA256 JWT sessions |
+| **Network & SSRF** | HTTP & Sockets | HTTPX, HTTPCore, Python Sockets | Synchronous socket transport, pre-request DNS validation, timeout bounding |
+| **Frontend UI** | Client Application | React 18, TypeScript, Vite | Component-driven architecture, custom hooks, strict TypeScript types |
+| **Styling & Design** | User Experience | Tailwind CSS, Lucide React Icons | Modern cybersecurity dark-theme palette, accessible responsive layout |
+| **Quality & Tests** | Testing & Linting | Pytest, Flake8, Black, ESLint | 116 automated unit/integration tests, PEP 8 enforcement, TypeScript build checks |
 
 ---
 
-## Project Structure
+## Project Directory Structure
 
-```
+```text
 CyberShield/
-├── backend/
-│   ├── alembic/                 # Database migrations (versions & env.py)
-│   ├── app/
-│   │   ├── models/              # SQLAlchemy models (User, Finding, FIM, LogEvent, Scan, Audit)
-│   │   ├── routes/              # FastAPI routers (auth, findings, dashboard, headers, fim, logs, scans)
-│   │   ├── schemas/             # Pydantic v2 schemas for request/response validation
-│   │   ├── security/            # Security guards (hashing, JWT, SSRF, FIM paths, log paths, scan targets)
-│   │   ├── services/            # Core business logic & assessment engines
-│   │   ├── utils/               # Audit helpers, IP extraction, sanitization
-│   │   ├── config.py            # Pydantic settings with production readiness validation
-│   │   ├── database.py          # SQLAlchemy engine, session maker, transaction rollback
-│   │   └── main.py              # Application entrypoint, CORS, exception handling
-│   ├── tests/
-│   │   └── unit/                # 116 automated unit and end-to-end integration tests
-│   ├── pyproject.toml           # Tooling configurations (Black, Pytest)
-│   ├── .flake8                  # PEP 8 linting rules
-│   ├── requirements.txt         # Production backend dependencies
-│   └── requirements-dev.txt     # Development, testing, and linting dependencies
-│
-├── frontend/
-│   ├── src/
-│   │   ├── app/                 # Root application shell and router layout
-│   │   ├── components/          # Shared components (Navbar, StatusCard, DashboardPlaceholder)
-│   │   ├── features/            # Feature modules:
-│   │   │   ├── auth/            # LoginPage, RegisterPage, ProtectedRoute, AuthContext
-│   │   │   ├── dashboard/       # DashboardOverview posture summary
-│   │   │   ├── findings/        # FindingsPage registry with search, filter, and triage
-│   │   │   ├── headers/         # WebSecurityHeadersPage analyzer UI
-│   │   │   ├── fim/             # FileIntegrityMonitorPage baseline & verification UI
-│   │   │   ├── logs/            # LogAnalyzerPage event viewer & analysis UI
-│   │   │   └── scans/           # NetworkScannerPage authorized TCP scanner UI
-│   │   ├── services/            # API client with token lifecycle and 401 interceptor
-│   │   ├── types/               # TypeScript interfaces and data models
-│   │   └── index.css            # Tailwind directives and cyber theme styling
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── vite.config.ts
-│   └── tailwind.config.js
-│
-├── data/                        # Persistent database and baseline storage (.gitignore protected)
-├── docs/                        # Architectural documentation:
-│   └── API_SPEC.md              # Complete REST API specification (28 endpoints)
-├── logs/                        # Application runtime and audit logs (.gitignore protected)
-├── reports/                     # Generated assessment reports (.gitignore protected)
-├── .env.example                 # Comprehensive environment configuration template
-├── .gitignore                   # Multi-layer protection against secret and database leaks
-├── docker-compose.yml           # Containerized multi-service definition
-└── README.md
+â”œâ”€â”€ backend/
+â”‚   â”œâ”€â”€ alembic/                 # Database migrations (versions & env.py)
+â”‚   â”œâ”€â”€ app/
+â”‚   â”‚   â”œâ”€â”€ models/              # SQLAlchemy models (User, Finding, FIM, LogEvent, Scan, Audit)
+â”‚   â”‚   â”œâ”€â”€ routes/              # FastAPI routers (auth, findings, dashboard, headers, fim, logs, scans)
+â”‚   â”‚   â”œâ”€â”€ schemas/             # Pydantic v2 schemas for request/response validation
+â”‚   â”‚   â”œâ”€â”€ security/            # Security guards (hashing, JWT, SSRF, FIM paths, log paths, scan targets)
+â”‚   â”‚   â”œâ”€â”€ services/            # Core assessment engines (FIM, logs, headers, scanner, findings)
+â”‚   â”‚   â”œâ”€â”€ utils/               # Audit helpers, IP extraction, recursive sanitization
+â”‚   â”‚   â”œâ”€â”€ config.py            # Pydantic Settings with production readiness validation
+â”‚   â”‚   â”œâ”€â”€ database.py          # SQLAlchemy engine, session maker, path normalizer
+â”‚   â”‚   â””â”€â”€ main.py              # FastAPI app entrypoint, CORS, exception handlers
+â”‚   â”œâ”€â”€ tests/
+â”‚   â”‚   â””â”€â”€ unit/                # 116 automated unit and end-to-end integration tests
+â”‚   â”œâ”€â”€ pyproject.toml           # Black and Pytest configuration
+â”‚   â”œâ”€â”€ .flake8                  # PEP 8 linting configuration
+â”‚   â”œâ”€â”€ requirements.txt         # Production dependencies
+â”‚   â””â”€â”€ requirements-dev.txt     # Development, testing, and linting dependencies
+â”‚
+â”œâ”€â”€ frontend/
+â”‚   â”œâ”€â”€ src/
+â”‚   â”‚   â”œâ”€â”€ app/                 # Root application shell and navigation layout
+â”‚   â”‚   â”œâ”€â”€ components/          # Shared components (Navbar, StatusCard)
+â”‚   â”‚   â”œâ”€â”€ features/            # Feature modules:
+â”‚   â”‚   â”‚   â”œâ”€â”€ auth/            # LoginPage, RegisterPage, ProtectedRoute, AuthContext
+â”‚   â”‚   â”‚   â”œâ”€â”€ dashboard/       # DashboardOverview posture summary
+â”‚   â”‚   â”‚   â”œâ”€â”€ findings/        # FindingsPage registry with search, filter, and triage
+â”‚   â”‚   â”‚   â”œâ”€â”€ headers/         # WebSecurityHeadersPage analyzer UI
+â”‚   â”‚   â”‚   â”œâ”€â”€ fim/             # FileIntegrityMonitorPage baseline & verification UI
+â”‚   â”‚   â”‚   â”œâ”€â”€ logs/            # LogAnalyzerPage event viewer & analysis UI
+â”‚   â”‚   â”‚   â””â”€â”€ scans/           # NetworkScannerPage authorized TCP scanner UI
+â”‚   â”‚   â”œâ”€â”€ services/            # API client with token lifecycle and 401 interceptor
+â”‚   â”‚   â”œâ”€â”€ types/               # TypeScript interfaces and data models
+â”‚   â”‚   â””â”€â”€ index.css            # Tailwind directives and cyber theme styling
+â”‚   â”œâ”€â”€ package.json             # Frontend dependencies and build scripts
+â”‚   â”œâ”€â”€ package-lock.json        # Locked dependency tree for deterministic builds
+â”‚   â”œâ”€â”€ tsconfig.json            # TypeScript compiler configuration
+â”‚   â”œâ”€â”€ vite.config.ts           # Vite bundler configuration
+â”‚   â””â”€â”€ tailwind.config.js       # Tailwind CSS theme configuration
+â”‚
+â”œâ”€â”€ data/                        # Persistent database and baseline storage (.gitignore protected)
+â”œâ”€â”€ docs/                        # Architectural documentation:
+â”‚   â””â”€â”€ API_SPEC.md              # Complete REST API specification (28 endpoints)
+â”œâ”€â”€ logs/                        # Application runtime and audit logs (.gitignore protected)
+â”œâ”€â”€ reports/                     # Generated assessment reports (.gitignore protected)
+â”œâ”€â”€ .env.example                 # Comprehensive environment configuration template
+â”œâ”€â”€ .gitignore                   # Multi-layer protection against secret and database leaks
+â”œâ”€â”€ LICENSE                      # MIT Open Source License
+â”œâ”€â”€ docker-compose.yml           # Containerized multi-service definition
+â”œâ”€â”€ render.yaml                  # Render.com Blueprint deployment specification
+â””â”€â”€ README.md                    # Project documentation
 ```
+
+---
+
+## Prerequisites & System Requirements
+
+Before running CyberShield locally, verify that your environment meets the following requirements:
+
+* **Operating System**: Windows 10/11 (PowerShell), macOS, or Linux
+* **Python**: `3.11` or `3.12` installed (verify with `python --version`)
+* **Node.js**: `18.x` or `20.x` LTS and `npm` installed (verify with `node -v` and `npm -v`)
+* **Git**: `2.30+` installed (verify with `git --version`)
 
 ---
 
 ## Local Setup & Installation (Windows PowerShell)
 
-Follow these steps to run CyberShield locally on Windows using PowerShell.
+Follow these steps to run CyberShield locally on Windows using PowerShell:
 
-### Prerequisites
-- **Python 3.11+ or 3.12+** (Verify with `python --version`)
-- **Node.js 18+ and npm** (Verify with `node -v` and `npm -v`)
-- **Git** (Verify with `git --version`)
-
----
-
-### Step 1: Clone Repository & Configure Environment
+### Step 1: Environment Configuration
 
 ```powershell
 # Clone the repository
 git clone https://github.com/yourusername/CyberShield.git
 cd CyberShield
 
-# Copy the environment configuration template
+# Create your local environment file from the template
 Copy-Item .env.example .env
 ```
 
 Open `.env` to review the default local configuration:
-- By default, `APP_ENV=development` and `DEBUG=True` allow local testing.
-- For local testing, `DATABASE_URL` defaults to SQLite at `./data/cybershield.db`.
-- Default authorized roots are configured for `./monitored` and `./logs`.
+* `APP_ENV=development` and `DEBUG=True` allow local testing and enable the interactive Swagger UI.
+* `DATABASE_URL` defaults to SQLite at `./data/cybershield.db`.
+* `FIM_ALLOWED_ROOTS` defaults to `./monitored,./data`.
+* `LOG_ALLOWED_ROOTS` defaults to `./logs,./data/logs`.
+* `SCAN_ALLOWED_TARGETS` defaults to `127.0.0.1,localhost,::1`.
 
 ---
 
@@ -243,14 +300,14 @@ Open `.env` to review the default local configuration:
 Open a PowerShell terminal:
 
 ```powershell
-# Navigate to backend directory
+# Navigate to the backend directory
 cd backend
 
-# Create Python virtual environment
+# Create a Python virtual environment
 python -m venv .venv
 
-# Activate virtual environment
-.venv\Scripts\Activate.ps1
+# Activate the virtual environment
+.\.venv\Scripts\Activate.ps1
 
 # Upgrade pip and install development dependencies
 pip install --upgrade pip
@@ -259,14 +316,14 @@ pip install -r requirements-dev.txt
 # Execute database migrations using Alembic
 alembic upgrade head
 
-# Start the FastAPI backend server
+# Start the FastAPI ASGI server
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 The backend server will start at:
-- **API Base URL**: `http://127.0.0.1:8000/api/v1`
-- **Interactive Swagger Docs**: `http://127.0.0.1:8000/api/v1/docs`
-- **Health Check**: `http://127.0.0.1:8000/api/v1/health`
+* **API Base URL**: `http://127.0.0.1:8000/api/v1`
+* **Interactive Swagger UI**: `http://127.0.0.1:8000/api/v1/docs`
+* **Health Check**: `http://127.0.0.1:8000/api/v1/health`
 
 ---
 
@@ -275,24 +332,24 @@ The backend server will start at:
 Open a second PowerShell terminal:
 
 ```powershell
-# Navigate to frontend directory
+# Navigate to the frontend directory
 cd frontend
 
 # Install Node dependencies
 npm install
 
-# Start Vite development server
+# Start the Vite development server
 npm run dev
 ```
 
-The frontend application will be available at:
-- **Web UI**: `http://localhost:5173`
+The frontend web interface will be available at:
+* **Web UI**: `http://localhost:5173`
 
 ---
 
-## Environment Configuration Dictionary
+## Environment Configuration Reference
 
-The platform uses Pydantic Settings to load and strictly validate settings from `.env` or system environment variables:
+The platform uses Pydantic Settings to load and validate variables from `.env` or system environment variables:
 
 | Variable | Default Value | Description |
 | :--- | :--- | :--- |
@@ -332,94 +389,154 @@ CyberShield maintains an automated testing suite ensuring zero regressions acros
 ### 1. Run Automated Backend Tests (Pytest)
 From the `backend/` directory:
 ```powershell
-.venv\Scripts\pytest -v
+.\.venv\Scripts\pytest -v
 ```
-*Current test suite: **115 passed, 1 skipped** (Windows non-admin symlink test), 0 failures.*
+* **Status**: **119 passed, 1 skipped** in ~24s.
+* *Note on Skipped Test*: `test_logs_symlink_escape_rejected` skips gracefully on non-elevated Windows environments because Windows requires Administrator privileges or Developer Mode to create filesystem symlinks (`os.symlink`). All canonical path isolation tests pass unconditionally.
 
 ### 2. Run Backend Code Linters & Formatters
+From the `backend/` directory:
 ```powershell
-# Check code style with Black
-.venv\Scripts\black --check app tests
+# Verify code formatting with Black (PEP 8 line-length 100)
+.\.venv\Scripts\black --check app tests scripts
 
-# Run PEP 8 linter with Flake8
-.venv\Scripts\flake8 app tests
+# Run static linting with Flake8
+.\.venv\Scripts\flake8 app tests scripts
 ```
 
 ### 3. Run Frontend Linting & Build Checks
 From the `frontend/` directory:
 ```powershell
-# ESLint validation
+# Execute ESLint checks
 npm run lint
 
-# TypeScript compilation and production bundle build
+# Execute TypeScript typechecking and production bundle compilation
 npm run build
 ```
 
 ---
 
-## Screenshot Walkthrough & Portfolio Reproduction Guide
+## REST API Specification
 
-To capture authentic UI screenshots for demonstrations or GitHub portfolio documentation, perform the following walkthrough against a running local instance (`http://localhost:5173`):
+CyberShield provides a clean, fully documented REST API exposing **28 endpoints** across 8 core modules.
 
-### 1. Authentication & Role Showcase
-1. Navigate to `http://localhost:5173`.
-2. Register an Analyst account (e.g., `analyst@cybershield.local` with password `CyberShield#2026!Secure`).
-3. Notice that the role selector allows `Analyst` or `Viewer`. Attempting to register as `Admin` returns a defensive error.
-4. Log in to establish an authenticated session.
-5. **Screenshot 1**: *Login & Registration Screen showing defensive password complexity enforcement.*
+* Detailed API documentation: [**`docs/API_SPEC.md`**](docs/API_SPEC.md)
+* Interactive Swagger UI: `http://127.0.0.1:8000/api/v1/docs` (available when `DEBUG=True`)
 
-### 2. Security Posture Dashboard
-1. Upon login, the application loads the **Security Dashboard**.
-2. Review the aggregated posture indicators: Active Findings, Severity Breakdown, Lifecycle Metrics, and Module Quick-Launch Cards.
-3. **Screenshot 2**: *Security Posture Dashboard displaying real-time metrics and severity distribution.*
+### Endpoint Overview
 
-### 3. Findings Registry & Triage
-1. Navigate to the **Findings** tab in the navigation bar.
-2. View existing findings generated across defensive engines.
-3. Filter by Severity (`High`, `Medium`), Category, or lifecycle Status (`Open`, `Resolved`).
-4. Click on a finding to view remediation guidance, diagnostic evidence, and CWE references.
-5. As an Analyst, transition a finding's status to `Resolved`.
-6. **Screenshot 3**: *Central Security Findings Registry showing multi-facet filtering and finding triage details.*
-
-### 4. Web Security Header Analyzer
-1. Navigate to the **Header Analyzer** tab.
-2. Enter an authorized target URL (e.g., `https://example.com` or your authorized portfolio domain).
-3. Check the mandatory operator authorization confirmation checkbox.
-4. Click **Run Analysis** to view the letter grade, hardening score, and detailed evaluation for all 6 security headers.
-5. Try testing an internal or loopback address (`http://127.0.0.1:8000`) to observe the active SSRF defense in action.
-6. **Screenshot 4**: *Web Security Header Analyzer displaying grading scorecard and SSRF protection intercept.*
-
-### 6. File Integrity Monitor (FIM)
-1. Navigate to the **File Integrity** tab.
-2. Select an authorized directory within the configured monitoring roots (`./monitored`).
-3. Click **Create Baseline** to compute SHA-256 cryptographic hashes for the directory files.
-4. Edit a monitored file in the directory and click **Check Integrity**.
-5. Observe the detection of the modified file and the automatic generation of a correlated Security Finding.
-6. **Screenshot 5**: *File Integrity Monitor showing cryptographic baseline status and tamper detection alert.*
-
-### 7. Defensive Log Analyzer
-1. Navigate to the **Log Analyzer** tab.
-2. Select or provide an authorized log file path (`./logs/test.log`).
-3. Click **Analyze Log** to parse events and run threat correlation.
-4. Review the normalized security event table, identified event categories (Authentication, Web Probing, Access Denied), and correlated findings.
-5. **Screenshot 6**: *Defensive Log Analyzer showcasing normalized security event logs and brute-force correlation.*
-
-### 8. Authorized Network Scanner
-1. Navigate to the **Network Scanner** tab.
-2. The scanner automatically displays the approved target scope (`SCAN_ALLOWED_TARGETS`).
-3. Enter `127.0.0.1`, select the `Common Ports` or `Custom` preset (e.g., ports `80, 443, 8000`), and check the mandatory authorization confirmation.
-4. Click **Start Scan** to execute the non-destructive connect check.
-5. Review the port status table showing identified open/closed ports and service mapping.
-6. Try scanning an unauthorized external IP (e.g., `8.8.8.8`) to observe the policy guard blocking the probe.
-7. **Screenshot 7**: *Authorized Network Scanner showing localized TCP connect diagnostics and scope containment.*
+| Module | Method & Route | Auth / RBAC | Description |
+| :--- | :--- | :--- | :--- |
+| **System** | `GET /api/v1/health` | Public | System health check and operational status |
+| **Auth** | `POST /api/v1/auth/register` | Public | Register a new platform user (`analyst` or `viewer`) |
+| **Auth** | `POST /api/v1/auth/login` | Public | Authenticate credentials and receive JWT access token |
+| **Auth** | `POST /api/v1/auth/refresh` | Public | Refresh an active JWT access token |
+| **Auth** | `GET /api/v1/auth/me` | Authenticated | Retrieve current authenticated operator profile and role |
+| **Dashboard** | `GET /api/v1/dashboard/summary` | Authenticated | Aggregated posture statistics, severity counts, and engine states |
+| **Findings** | `GET /api/v1/findings` | Authenticated | List and filter security findings by severity, category, or status |
+| **Findings** | `POST /api/v1/findings` | Analyst / Admin | Create an authorized security finding |
+| **Findings** | `GET /api/v1/findings/{id}` | Authenticated | Retrieve finding details with remediation guidance and evidence |
+| **Findings** | `PATCH /api/v1/findings/{id}` | Analyst / Admin | Update finding details, severity, or remediation guidance |
+| **Findings** | `PATCH /api/v1/findings/{id}/status` | Analyst / Admin | Transition finding lifecycle status (`open`, `investigating`, `resolved`) |
+| **Findings** | `DELETE /api/v1/findings/{id}` | **Admin Only** | Permanently delete a security finding |
+| **Headers** | `POST /api/v1/headers/analyze` | Analyst / Admin | Analyze security headers with mandatory SSRF protection |
+| **Headers** | `GET /api/v1/headers/history` | Authenticated | Retrieve historical header analysis assessments |
+| **FIM** | `POST /api/v1/fim/baselines` | Analyst / Admin | Generate cryptographic SHA-256 baseline for authorized directory |
+| **FIM** | `POST /api/v1/fim/check` | Analyst / Admin | Compare directory against baseline to detect file alterations |
+| **FIM** | `GET /api/v1/fim/records` | Authenticated | View file baseline records and cryptographic metadata |
+| **FIM** | `GET /api/v1/fim/status` | Authenticated | Summary of monitored files and baseline integrity status |
+| **FIM** | `GET /api/v1/fim/roots` | Authenticated | List configured authorized monitoring roots |
+| **Logs** | `POST /api/v1/logs/analyze` | Analyst / Admin | Parse authorized log file and correlate threat patterns |
+| **Logs** | `GET /api/v1/logs/events` | Authenticated | Query normalized security events with pagination and filters |
+| **Logs** | `GET /api/v1/logs/events/{id}` | Authenticated | Retrieve individual normalized log event details |
+| **Logs** | `GET /api/v1/logs/summary` | Authenticated | Aggregated event statistics and threat category breakdown |
+| **Logs** | `GET /api/v1/logs/roots` | Authenticated | List configured authorized log file directories |
+| **Scanner** | `POST /api/v1/scans` | Analyst / Admin | Execute non-destructive TCP connect scan against authorized target |
+| **Scanner** | `GET /api/v1/scans` | Authenticated | List historical network scan records |
+| **Scanner** | `GET /api/v1/scans/{id}` | Authenticated | Retrieve port scan results, open services, and duration |
+| **Scanner** | `GET /api/v1/scans/summary` | Authenticated | Summary metrics of scanned ports and identified exposures |
+| **Scanner** | `GET /api/v1/scans/scope` | Authenticated | View configured authorized scan target whitelist |
 
 ---
 
-## Security Architecture & Defensive Boundaries
+## Production Deployment on Render
+
+CyberShield is ready for turnkey production deployment on [Render](https://render.com) using the included [`render.yaml`](render.yaml) Blueprint or manual service configuration.
+
+### Architecture on Render
+* **Database (`cybershield-db`)**: Render Managed PostgreSQL replacing local SQLite for production concurrency and data persistence.
+* **Backend Web Service (`cybershield-backend`)**: Python 3.12+ ASGI service running FastAPI on Uvicorn behind Render's automated TLS reverse proxy.
+* **Frontend Static Site (`cybershield-frontend`)**: Global CDN hosting the compiled React 18 single-page application.
+
+---
+
+### Method 1: Automated Blueprint Deployment (Recommended)
+1. Fork or push this repository to your GitHub account (`https://github.com/alok-rana10/CyberShield`).
+2. Log in to the [Render Dashboard](https://dashboard.render.com).
+3. Click **Blueprints** â†’ **New Blueprint Instance**.
+4. Connect your GitHub repository. Render reads [`render.yaml`](render.yaml) and provisions:
+   - PostgreSQL Database (`cybershield-db`)
+   - Backend Web Service (`cybershield-backend`)
+   - Frontend Static Site (`cybershield-frontend`)
+5. During creation, Render will prompt for un-synced environment variables:
+   - `CORS_ORIGINS`: Set to your frontend static site URL (e.g., `https://cybershield-frontend.onrender.com`).
+   - `VITE_API_BASE_URL`: Set to your backend web service URL (e.g., `https://cybershield-backend.onrender.com`).
+6. Click **Apply**. Render will automatically run Alembic migrations on startup and launch both services.
+
+---
+
+### Method 2: Manual Dashboard Configuration
+
+#### Step 1: Provision Managed PostgreSQL
+* **Name**: `cybershield-db`
+* **Database**: `cybershield`
+* **User**: `cybershield`
+* **Region**: `Oregon` (or match your service region)
+* **Plan**: `Free` or `Starter`
+* Copy the generated **Internal Database URL** (e.g., `postgres://cybershield:password@dpg-xxx:5432/cybershield`).
+
+#### Step 2: Deploy Backend Web Service
+* **Type**: Web Service
+* **Name**: `cybershield-backend`
+* **Runtime**: `Python`
+* **Root Directory**: `backend`
+* **Build Command**: `pip install --upgrade pip && pip install -r requirements.txt`
+* **Start Command**: `alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+* **Health Check Path**: `/api/v1/health`
+* **Environment Variables**:
+  | Variable | Production Value | Purpose |
+  | :--- | :--- | :--- |
+  | `APP_ENV` | `production` | Enforces production security checks |
+  | `DEBUG` | `False` | Disables debug mode and suppresses internal error traces |
+  | `DATABASE_URL` | `<Your-Internal-Database-URL>` | Automatic normalization to `postgresql+psycopg2://` |
+  | `JWT_SECRET_KEY` | `<Random-32-Char-Secret>` | Generate via `python -c "import secrets; print(secrets.token_hex(32))"` |
+  | `CORS_ORIGINS` | `https://cybershield-frontend.onrender.com` | Restricts CORS to the frontend domain (no wildcard `*`) |
+  | `SCAN_ALLOWED_TARGETS` | `127.0.0.1,localhost,::1` | Allowed targets for TCP scanning |
+  | `FIM_ALLOWED_ROOTS` | `./monitored,./data` | Authorized roots for file integrity baselines |
+  | `LOG_ALLOWED_ROOTS` | `./logs,./data/logs` | Authorized roots for log analysis |
+
+#### Step 3: Deploy Frontend Static Site
+* **Type**: Static Site
+* **Name**: `cybershield-frontend`
+* **Root Directory**: `frontend`
+* **Build Command**: `npm install && npm run build`
+* **Publish Directory**: `dist`
+* **Redirects / Rewrites** *(Mandatory for React SPA routing)*:
+  * **Type**: `Rewrite`
+  * **Source**: `/*`
+  * **Destination**: `/index.html`
+* **Environment Variables**:
+  | Variable | Production Value | Purpose |
+  | :--- | :--- | :--- |
+  | `VITE_API_BASE_URL` | `https://cybershield-backend.onrender.com` | Embedded into the client bundle at build time |
+
+---
+
+## Security Architecture & Boundary Controls
 
 | Defensive Boundary | Threat Mitigated | Technical Implementation |
 | :--- | :--- | :--- |
-| **SSRF / DNS Rebinding** | Open proxy abuse, internal reconnaissance, cloud metadata exfiltration | Pre-request DNS resolution; custom synchronous HTTP transport binding validated socket IP; blocking loopback, RFC1918, link-local, multicast, and metadata addresses |
+| **SSRF / DNS Rebinding** | Open proxy abuse, internal reconnaissance, cloud metadata exfiltration | Pre-request DNS resolution; custom synchronous HTTP transport binding validated socket IP; unconditional blocking of loopback, RFC 1918, link-local, multicast, and metadata addresses |
 | **Filesystem Traversal** | Unauthorized file disclosure, arbitrary file overwrite | Strict canonical path resolution against `FIM_ALLOWED_ROOTS` and `LOG_ALLOWED_ROOTS`; rejection of symlink escapes and parent traversals (`../`) |
 | **Network Probing Scope** | Unauthorized port scanning, network abuse | Whitelisted target matching (`SCAN_ALLOWED_TARGETS`); strict port caps (max 100); sliding window user rate limiting; standard TCP connect-only |
 | **Credential Protection** | Password disclosure, hash leakage | Argon2id hashing; exclusion of sensitive fields from API schemas; recursive audit detail sanitization redacting secret keys |
@@ -430,16 +547,23 @@ To capture authentic UI screenshots for demonstrations or GitHub portfolio docum
 
 ## Factual Security Posture & Known Limitations
 
-CyberShield is engineered for defensive monitoring, assessment, and compliance workflows. To maintain transparency, the following technical limitations apply to the current architecture:
+To maintain engineering transparency, the following technical boundaries apply to the current architecture:
 
 1. **Local Concurrency & SQLite**:
-   - For local development and demonstration, CyberShield defaults to SQLite. Under high concurrent write loads (e.g., dozens of simultaneous scan runs or baselines), SQLite database file locks may occur.
-   - *Production Path*: The codebase uses SQLAlchemy 2.0 with Alembic migrations and is designed for zero-code configuration to PostgreSQL by updating `DATABASE_URL`.
+   * For local development and demonstration, CyberShield defaults to SQLite. Under high concurrent write loads (e.g., dozens of simultaneous scan runs or baselines), SQLite database file locks may occur.
+   * *Production Path*: The codebase uses SQLAlchemy 2.0 with Alembic migrations and is designed for zero-code configuration to PostgreSQL by updating `DATABASE_URL`.
 2. **Reverse Proxy & TLS Termination**:
-   - The application does not natively implement HTTPS/TLS certificates inside Uvicorn. For production deployments, CyberShield must be placed behind a reverse proxy (Nginx, Traefik, or Caddy) handling TLS termination and HSTS enforcement.
+   * The application does not natively implement HTTPS/TLS certificates inside Uvicorn. For production deployments, CyberShield must be placed behind a reverse proxy (Nginx, Traefik, or Caddy) handling TLS termination and HSTS enforcement.
+   * *Production Path*: Configure HTTPS reverse proxy termination and update `CORS_ORIGINS` to trusted HTTPS origins.
 3. **Connect-Only Network Diagnostics**:
-   - The Network Scanner intentionally uses standard OS-level TCP connect calls (`socket.connect_ex`). It does not perform SYN stealth scans, OS fingerprinting, banner grabbing, or vulnerability fuzzing by defensive design.
+   * The Network Scanner intentionally uses standard OS-level TCP connect calls (`socket.connect_ex`). It does not perform SYN stealth scans, OS fingerprinting, banner grabbing, or vulnerability fuzzing by defensive design.
 4. **Local Filesystem FIM Scope**:
-   - The FIM engine operates on local directory paths accessible by the application process. It does not monitor remote agent endpoints or kernel-level filesystem events (`inotify`/`ReadDirectoryChangesW`) in real time; checks are executed on demand or via scheduled triggers.
+   * The FIM engine operates on local directory paths accessible by the application process. It does not monitor remote agent endpoints or kernel-level filesystem events (`inotify`/`ReadDirectoryChangesW`) in real time; checks are executed on demand.
 5. **Windows Symlink Test Privilege**:
-   - Creating symbolic links on Windows requires Developer Mode or elevated Administrator privileges. In non-elevated developer shells, the symlink escape test (`test_logs_symlink_escape_rejected`) is gracefully skipped while all path canonicalization checks pass.
+   * Creating symbolic links on Windows requires Developer Mode or elevated Administrator privileges. In non-elevated developer shells, the symlink escape test (`test_logs_symlink_escape_rejected`) is gracefully skipped while all path canonicalization checks pass.
+
+---
+
+## License
+
+This project is licensed under the **MIT License**. See the [**`LICENSE`**](LICENSE) file for complete terms and copyright notices.

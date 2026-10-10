@@ -294,3 +294,72 @@ def test_audit_logs_persisted_for_security_events():
                 assert entry.details["token"] == "[REDACTED]"
     finally:
         db.close()
+
+
+def test_admin_bootstrap_creates_new_administrator():
+    """Verify create_or_promote_admin creates a new administrator with audit entry."""
+    from scripts.create_admin import create_or_promote_admin
+
+    admin_email = f"bootstrap_admin_{uuid.uuid4().hex[:8]}@example.com"
+    admin_pass = "AdminShield#2026!Master"
+
+    success = create_or_promote_admin(
+        email=admin_email, password=admin_pass, full_name="Super Admin"
+    )
+    assert success is True
+
+    db: Session = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email == admin_email).first()
+        assert user is not None
+        assert user.role == "admin"
+        assert user.is_active is True
+
+        audit = (
+            db.query(AuditLog)
+            .filter(AuditLog.action == "ADMIN_BOOTSTRAP_CREATED", AuditLog.user_id == user.id)
+            .first()
+        )
+        assert audit is not None
+    finally:
+        db.close()
+
+
+def test_admin_bootstrap_promotes_existing_analyst():
+    """Verify create_or_promote_admin promotes an existing analyst without password change."""
+    from scripts.create_admin import create_or_promote_admin
+
+    email = random_email()
+    db: Session = SessionLocal()
+    try:
+        analyst = User(
+            email=email,
+            hashed_password=hash_password(VALID_PASSWORD),
+            full_name="Existing Analyst",
+            role="analyst",
+            is_active=True,
+        )
+        db.add(analyst)
+        db.commit()
+        db.refresh(analyst)
+        user_id = analyst.id
+    finally:
+        db.close()
+
+    success = create_or_promote_admin(email=email)
+    assert success is True
+
+    db = SessionLocal()
+    try:
+        updated = db.query(User).filter(User.id == user_id).first()
+        assert updated is not None
+        assert updated.role == "admin"
+
+        audit = (
+            db.query(AuditLog)
+            .filter(AuditLog.action == "ADMIN_BOOTSTRAP_PROMOTED", AuditLog.user_id == user_id)
+            .first()
+        )
+        assert audit is not None
+    finally:
+        db.close()
