@@ -32,8 +32,27 @@ import {
   ScanSummaryResponse,
 } from '../types';
 
-const rawApiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-export const API_BASE_URL = rawApiBase.replace(/\/+$/, '');
+/**
+ * Normalizes the API base URL to ensure:
+ * 1. Trailing slashes are stripped.
+ * 2. If the user provided a URL ending in `/api/v1` or `/api/v1/`,
+ *    the `/api/v1` suffix is stripped so that endpoints appending `/api/v1/...`
+ *    never produce duplicated `/api/v1/api/v1/...` paths.
+ * 3. Falls back to `http://localhost:8000` when unset or empty.
+ */
+export function normalizeApiBaseUrl(url?: string | null): string {
+  if (!url || typeof url !== 'string') {
+    return 'http://localhost:8000';
+  }
+  let trimmed = url.trim().replace(/\/+$/, '');
+  if (trimmed.endsWith('/api/v1')) {
+    trimmed = trimmed.slice(0, -'/api/v1'.length).replace(/\/+$/, '');
+  }
+  return trimmed || 'http://localhost:8000';
+}
+
+const rawApiBase = import.meta.env.VITE_API_BASE_URL;
+export const API_BASE_URL = normalizeApiBaseUrl(rawApiBase);
 
 /**
  * Helper to parse error details from API responses

@@ -1,5 +1,6 @@
 """Application configuration using Pydantic Settings."""
 
+import re
 from functools import lru_cache
 from typing import List
 from pydantic import model_validator
@@ -18,6 +19,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
 
     CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
+    CORS_ORIGIN_REGEX: str | None = None
     DATABASE_URL: str = "sqlite:///./data/cybershield.db"
 
     # JWT Authentication Settings
@@ -87,13 +89,33 @@ class Settings(BaseSettings):
                     "wildcard '*' in production."
                 )
 
+            if self.CORS_ORIGIN_REGEX:
+                regex_str = self.CORS_ORIGIN_REGEX.strip()
+                if regex_str in ("*", ".*", "^.*$", r"^https?://.*$"):
+                    raise ValueError(
+                        "Security configuration error: CORS_ORIGIN_REGEX cannot be a "
+                        "permissive wildcard in production."
+                    )
+                if re.search(
+                    r"\.\*(\\?\.)?(onrender|vercel|netlify|github)(\\?\.)(com|app|io)",
+                    regex_str,
+                ):
+                    raise ValueError(
+                        "Security configuration error: CORS_ORIGIN_REGEX cannot use unconstrained "
+                        "wildcard subdomains on shared multi-tenant platforms in production."
+                    )
+
         return self
 
     @property
     def cors_origins_list(self) -> List[str]:
-        """Return CORS origins as a list of strings."""
+        """Return CORS origins as a list of strings with trailing slashes stripped."""
         if isinstance(self.CORS_ORIGINS, str):
-            return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+            return [
+                origin.strip().rstrip("/")
+                for origin in self.CORS_ORIGINS.split(",")
+                if origin.strip()
+            ]
         return ["*"]
 
     @property

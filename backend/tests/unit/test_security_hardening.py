@@ -111,6 +111,54 @@ def test_valid_production_config_accepted():
     assert len(valid_cfg.cors_origins_list) == 2
 
 
+def test_cors_origins_normalizes_trailing_slashes():
+    """Verify that cors_origins_list strips trailing slashes from origins."""
+    cfg = Settings(
+        CORS_ORIGINS="https://cybershield-frontend-dj4s.onrender.com/, http://localhost:5173/ "
+    )
+    assert cfg.cors_origins_list == [
+        "https://cybershield-frontend-dj4s.onrender.com",
+        "http://localhost:5173",
+    ]
+
+
+def test_production_config_rejects_wildcard_cors_regex():
+    """Verify Settings rejects overly permissive wildcard CORS_ORIGIN_REGEX in production."""
+    with pytest.raises(ValueError, match="CORS_ORIGIN_REGEX cannot be a permissive wildcard"):
+        Settings(
+            APP_ENV="production",
+            DEBUG=False,
+            JWT_SECRET_KEY="f8b09341b52a79c941e7dc6016e1654878a9c370c9eb37492c",
+            CORS_ORIGIN_REGEX=".*",
+        )
+
+
+def test_production_config_rejects_broad_shared_hosting_wildcard_regex():
+    """Verify Settings rejects broad multi-tenant onrender wildcard regex in production."""
+    with pytest.raises(
+        ValueError,
+        match="cannot use unconstrained wildcard subdomains on shared multi-tenant platforms",
+    ):
+        Settings(
+            APP_ENV="production",
+            DEBUG=False,
+            JWT_SECRET_KEY="f8b09341b52a79c941e7dc6016e1654878a9c370c9eb37492c",
+            CORS_ORIGIN_REGEX=r"^https:\/\/.*\.onrender\.com$",
+        )
+
+
+def test_production_config_accepts_scoped_project_cors_regex():
+    """Verify Settings accepts project-scoped preview regex in production."""
+    cfg = Settings(
+        APP_ENV="production",
+        DEBUG=False,
+        JWT_SECRET_KEY="f8b09341b52a79c941e7dc6016e1654878a9c370c9eb37492c",
+        CORS_ORIGINS="https://cybershield-frontend-dj4s.onrender.com",
+        CORS_ORIGIN_REGEX=r"^https:\/\/cybershield-frontend-[a-z0-9]+\.onrender\.com$",
+    )
+    assert cfg.CORS_ORIGIN_REGEX == r"^https:\/\/cybershield-frontend-[a-z0-9]+\.onrender\.com$"
+
+
 # ==============================================================================
 # 2. JWT Lifecycle, Expiration, and Signature Tampering Tests
 # ==============================================================================
